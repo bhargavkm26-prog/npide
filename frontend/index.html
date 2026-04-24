@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+<<<<<<< HEAD
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NPIDE — National Policy Intelligence & Delivery Engine</title>
@@ -1139,6 +1140,1374 @@ Thresholds: HIGH >= 70%, MEDIUM 40-70%, LOW < 40%`;
       setTimeout(() => { const cb = document.getElementById("agent-chat-box"); if (cb) cb.scrollTop = cb.scrollHeight; }, 100);
     }
   </script>
+=======
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NPIDE — National Policy Intelligence & Delivery Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #05080F; --surface: #0B1020; --card: #101828;
+  --border: #1A2540; --accent: #0EA5E9; --accent-dim: #0C4A6E;
+  --green: #10B981; --red: #EF4444; --amber: #F59E0B; --purple: #A78BFA;
+  --text: #F0F4FF; --muted: #64748B; --dim: #1E293B;
+}
+html, body { height: 100%; }
+body { font-family: 'IBM Plex Sans','Segoe UI',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.anim-in { animation: fadeIn 0.25s ease forwards; }
+.slide-up { animation: slideUp 0.3s ease forwards; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Topbar ── */
+#topbar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 12px 28px; display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 50;
+}
+.top-badge { font-size: 11px; background: var(--accent); color: var(--bg); padding: 2px 8px; border-radius: 4px; font-weight: 800; letter-spacing: 1px; }
+.top-logo { font-size: 13px; font-weight: 800; letter-spacing: 1px; color: var(--accent); }
+.top-user { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),#6366F1); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+.pill { border-radius: 20px; font-size: 11px; font-weight: 700; padding: 3px 10px; letter-spacing: 0.5px; }
+.logout-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 5px 14px; border-radius: 6px; font-size: 11px; }
+.logout-btn:hover { color: var(--text); border-color: var(--muted); }
+
+/* ── Returning user banner ── */
+.returning-banner {
+  background: linear-gradient(135deg, rgba(16,184,129,0.12), rgba(14,165,233,0.08));
+  border: 1px solid rgba(16,184,129,0.3); border-radius: 12px;
+  padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px;
+}
+
+/* ── API status dot ── */
+.api-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.api-dot.live { background: var(--green); animation: pulse 2s infinite; }
+.api-dot.offline { background: var(--amber); }
+
+/* ─────────────────────────────────────────
+   LOGIN — NEW DUAL-MODE DESIGN
+   ───────────────────────────────────────── */
+#login-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 30% 20%, #0C1A3A 0%, var(--bg) 60%);
+}
+.login-box {
+  width: 460px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 40px 36px; box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  animation: slideUp 0.4s ease;
+}
+.logo-mark {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: linear-gradient(135deg,var(--accent),#6366F1);
+  display: inline-flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 12px;
+}
+
+/* Role tabs (Citizen / Admin) */
+.role-tabs { display: flex; background: var(--dim); border-radius: 10px; padding: 4px; margin-bottom: 28px; gap: 4px; }
+.role-tab { flex: 1; padding: 9px 0; text-align: center; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; letter-spacing: 1px; transition: all 0.2s; cursor: pointer; }
+.role-tab.active { background: var(--accent); color: var(--bg); }
+.role-tab:not(.active) { background: transparent; color: var(--muted); }
+
+/* ── NEW: Auth mode selector (Sign Up / Sign In) ── */
+.auth-mode-selector {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px;
+}
+.auth-mode-card {
+  border: 2px solid var(--border); border-radius: 12px; padding: 16px 14px;
+  background: var(--card); cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.auth-mode-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.auth-mode-card.selected { border-color: var(--accent); background: rgba(14,165,233,0.08); }
+.auth-mode-card .mode-icon { font-size: 24px; margin-bottom: 6px; }
+.auth-mode-card .mode-title { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; color: var(--text); }
+.auth-mode-card .mode-sub { font-size: 10px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+/* UserID display chip */
+.userid-chip {
+  display: flex; align-items: center; gap: 10px; background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+}
+.userid-chip .uid-label { font-size: 9px; font-weight: 800; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.userid-chip .uid-val { font-size: 14px; font-weight: 800; color: var(--green); font-family: 'DM Mono', monospace; }
+.userid-chip .copy-uid { background: var(--dim); border: 1px solid var(--border); color: var(--muted); border-radius: 5px; padding: 3px 9px; font-size: 10px; font-weight: 700; margin-left: auto; }
+.userid-chip .copy-uid:hover { color: var(--text); }
+
+.field-label { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; display: block; margin-bottom: 6px; }
+.std-input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; color: var(--text); font-size: 13px; outline: none; margin-bottom: 14px; transition: border-color 0.2s; }
+.std-input:focus { border-color: var(--accent); }
+.login-btn { width: 100%; background: linear-gradient(135deg,var(--accent),#6366F1); color: #fff; border: none; border-radius: 10px; padding: 13px; font-size: 13px; font-weight: 800; letter-spacing: 1px; margin-top: 6px; transition: opacity 0.2s; }
+.login-btn:hover { opacity: 0.9; }
+.err-msg { color: var(--red); font-size: 12px; margin: -4px 0 10px; }
+
+/* info note box */
+.info-note { background: rgba(14,165,233,0.07); border: 1px solid rgba(14,165,233,0.2); border-radius: 8px; padding: 10px 14px; font-size: 11px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+.info-note strong { color: var(--accent); }
+
+/* ── Chat ── */
+#chat-wrap { max-width: 640px; margin: 0 auto; padding: 32px 20px; }
+.chat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; min-height: 400px; display: flex; flex-direction: column; gap: 12px; max-height: 500px; overflow-y: auto; }
+.bubble { display: flex; align-items: flex-end; gap: 8px; }
+.bubble.user { justify-content: flex-end; }
+.msg { max-width: 78%; padding: 11px 15px; font-size: 13px; line-height: 1.55; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.msg.bot { background: var(--card); border-radius: 4px 16px 16px 16px; color: var(--text); }
+.msg.user { background: var(--accent); border-radius: 16px 4px 16px 16px; color: #fff; }
+.bot-icon { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg,var(--accent),#6366F1); display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); display: inline-block; opacity: 0.7; }
+.opt-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.opt-btn { padding: 8px 16px; background: var(--dim); border: 1px solid var(--border); border-radius: 20px; color: var(--text); font-size: 12px; font-weight: 600; transition: all 0.15s; }
+.opt-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.text-row { display: flex; gap: 8px; margin-top: 8px; }
+.chat-input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; }
+.send-btn { background: var(--accent); border: none; border-radius: 10px; padding: 10px 18px; color: #fff; font-size: 12px; font-weight: 800; }
+
+/* ── User Dashboard ── */
+.dash { padding: 28px; }
+.stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.stat-num { font-size: 26px; font-weight: 800; line-height: 1; }
+.stat-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+.scheme-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 14px; margin-bottom: 28px; }
+.scheme-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; position: relative; overflow: hidden; transition: transform 0.15s, box-shadow 0.15s; cursor: default; }
+.scheme-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(14,165,233,0.15); }
+.scheme-card.highlight { background: linear-gradient(135deg, rgba(12,74,110,0.33),var(--card)); border-color: var(--accent); }
+.star-badge { position: absolute; top: 12px; right: 12px; background: var(--accent); color: #fff; border-radius: 20px; font-size: 9px; font-weight: 800; padding: 3px 8px; letter-spacing: 1px; }
+.ai-badge { position: absolute; bottom: 12px; right: 12px; background: rgba(167,139,250,0.2); color: var(--purple); border: 1px solid rgba(167,139,250,0.4); border-radius: 20px; font-size: 9px; font-weight: 800; padding: 2px 7px; letter-spacing: 1px; }
+.apply-btn { background: linear-gradient(135deg,var(--accent),#6366F1); color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+.details-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 8px 14px; font-size: 11px; font-weight: 700; transition: all 0.15s; }
+.details-btn:hover { border-color: var(--accent); color: var(--accent); }
+.cat-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.cat-btn { padding: 7px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid var(--border); background: var(--dim); color: var(--text); transition: all 0.15s; }
+.cat-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* ── Applications Tab ── */
+.app-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.status-badge { border-radius: 6px; font-size: 11px; font-weight: 700; padding: 4px 12px; letter-spacing: 0.5px; }
+
+/* ── User hotspot list ── */
+.hotspot-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.hotspot-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+.hotspot-select { min-width: 150px; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 10px 12px; font-size: 12px; outline: none; }
+.hotspot-list { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.hotspot-row { display: grid; grid-template-columns: 64px 1.2fr 1fr auto; gap: 16px; align-items: center; padding: 18px 20px; border-bottom: 1px solid rgba(26,37,64,0.44); }
+.hotspot-row:last-child { border-bottom: none; }
+.hotspot-rank { width: 48px; height: 48px; border-radius: 16px; border: 1px solid rgba(245,158,11,0.35); background: rgba(245,158,11,0.08); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: var(--amber); }
+.hotspot-meta { font-size: 11px; color: #94A3B8; margin-top: 4px; line-height: 1.5; }
+.hotspot-count { font-size: 28px; font-weight: 800; line-height: 1; }
+.hotspot-label { font-size: 10px; color: var(--muted); letter-spacing: 1.4px; text-transform: uppercase; margin-top: 4px; }
+.hotspot-empty { text-align: center; padding: 46px 24px; color: var(--muted); font-size: 13px; }
+.prediction-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:24px; }
+.prediction-alert { background:linear-gradient(135deg, rgba(239,68,68,0.16), rgba(245,158,11,0.10)); border:1px solid rgba(239,68,68,0.35); border-radius:14px; padding:18px 20px; margin-bottom:20px; }
+.prediction-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+.prediction-title { font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.prediction-district { font-size:15px; font-weight:800; margin-bottom:4px; }
+.prediction-meta { font-size:11px; color:var(--muted); line-height:1.5; }
+.prediction-bar { height:10px; background:var(--dim); border-radius:999px; overflow:hidden; margin-top:12px; }
+.prediction-bar-fill { height:100%; border-radius:999px; }
+@media (max-width: 860px) {
+  .hotspot-row { grid-template-columns: 56px 1fr; }
+}
+
+/* ── Modal ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+.modal-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 580px; max-height: 88vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.7); }
+.modal-header { padding: 24px 28px 0; position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.modal-body { padding: 20px 28px 28px; }
+.modal-section { margin-bottom: 22px; }
+.modal-section-title { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.info-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
+.close-btn { background: var(--dim); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; width: 32px; height: 32px; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* ── Grievance form ── */
+.griev-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
+.griev-result { background: var(--card); border: 1px solid var(--accent); border-radius: 10px; padding: 16px 20px; margin-top: 14px; animation: fadeIn 0.3s ease; }
+
+/* ── Admin ── */
+.admin-wrap { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 57px); }
+.sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0; }
+.side-item { padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; color: var(--muted); background: transparent; border-left: 3px solid transparent; transition: all 0.15s; }
+.side-item:hover { color: var(--text); }
+.side-item.active { color: var(--accent); background: rgba(12,74,110,0.27); border-left-color: var(--accent); }
+.admin-main { padding: 28px; overflow-y: auto; max-height: calc(100vh - 57px); }
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 12px 16px; font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); text-align: left; background: var(--dim); }
+td { padding: 12px 16px; font-size: 12px; border-bottom: 1px solid rgba(26,37,64,0.44); vertical-align: middle; }
+.action-btn { border-radius: 5px; padding: 4px 11px; font-size: 10px; font-weight: 700; margin-right: 6px; letter-spacing: 0.5px; border: 1px solid; }
+.profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.section-title { font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+
+/* ── Policy Engine ── */
+.pe-wrap { font-family: 'DM Mono','Courier New',monospace; background: #0A0D14; color: #E2E8F0; min-height: 100%; }
+.pe-inner-header { background: #111622; border-bottom: 1px solid #1E2740; padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; }
+.pe-tabs { display: flex; background: #111622; border-bottom: 1px solid #1E2740; overflow-x: auto; }
+.pe-tab { padding: 12px 20px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: none; background: transparent; color: #64748B; border-bottom: 2px solid transparent; transition: all 0.15s; font-family: 'DM Mono',monospace; white-space: nowrap; }
+.pe-tab.active { color: #60A5FA; border-bottom-color: #60A5FA; }
+.pe-body { padding: 28px; max-width: 1000px; }
+.pe-card { background: #111622; border: 1px solid #1E2740; border-radius: 8px; padding: 24px; margin-bottom: 16px; }
+.pe-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #64748B; text-transform: uppercase; margin-bottom: 6px; }
+.pe-input { width: 100%; background: #0A0D14; border: 1px solid #1E2740; border-radius: 5px; padding: 9px 12px; color: #E2E8F0; font-size: 13px; outline: none; font-family: 'DM Mono',monospace; }
+.pe-input:focus { border-color: #60A5FA; }
+.pe-select { width: 100%; background: #0A0D14; border: 1px solid #1E2740; border-radius: 5px; padding: 9px 12px; color: #E2E8F0; font-size: 13px; outline: none; font-family: 'DM Mono',monospace; }
+.pe-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+.pe-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+.pe-btn { border-radius: 5px; padding: 9px 18px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid; font-family: 'DM Mono',monospace; transition: all 0.15s; }
+.pe-scheme-line { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #0A0D14; border: 1px solid #1E2740; border-radius: 6px; margin-bottom: 8px; }
+.pe-chip { border-radius: 3px; font-size: 10px; font-weight: 700; padding: 2px 7px; letter-spacing: 1px; border: 1px solid; display: inline-block; }
+.drop-zone { border: 2px dashed #1E2740; border-radius: 8px; padding: 48px 24px; text-align: center; background: #0A0D14; cursor: pointer; transition: all 0.2s; }
+.drop-zone:hover, .drop-zone.dragging { border-color: #60A5FA; background: rgba(59,130,246,0.07); }
+.pe-log { background: #0A0D14; border: 1px solid #1E2740; border-radius: 6px; padding: 14px 16px; font-size: 11px; color: #64748B; font-family: 'DM Mono',monospace; line-height: 1.8; max-height: 220px; overflow-y: auto; }
+.sql-box { background: #0D1117; border: 1px solid #1E2740; border-radius: 6px; padding: 16px; font-size: 11px; color: #7EE787; font-family: 'DM Mono',monospace; line-height: 1.8; overflow-x: auto; white-space: pre; }
+.confirm-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 300; }
+.confirm-box { background: #111622; border: 1px solid #1E2740; border-radius: 10px; padding: 28px; width: 560px; max-height: 85vh; overflow-y: auto; }
+.edit-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.edit-modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; width: 480px; }
+.hidden { display: none !important; }
+.flex-gap { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.spinner { width: 18px; height: 18px; border: 2px solid #1E2740; border-top-color: #60A5FA; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+@keyframes bounce0{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes bounce1{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes bounce2{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.td0{animation:bounce0 1s 0s infinite}.td1{animation:bounce1 1s 0.2s infinite}.td2{animation:bounce2 1s 0.4s infinite}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar" class="hidden">
+  <div class="top-badge">NPIDE</div>
+  <span class="top-logo">Policy Engine</span>
+  <span id="api-status" style="font-size:10px;color:var(--muted)"></span>
+  <div class="top-user">
+    <div class="avatar" id="top-avatar">A</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span id="top-name" style="font-size:12px;font-weight:700"></span>
+      <span id="top-userid" style="font-size:9px;color:var(--muted);font-family:'DM Mono',monospace"></span>
+    </div>
+    <span id="top-role-pill" class="pill"></span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     LOGIN SCREEN — Sign Up / Sign In
+     ══════════════════════════════════════ -->
+<div id="login-wrap">
+  <div class="login-box">
+    <div style="text-align:center;margin-bottom:28px">
+      <div class="logo-mark">🏛</div>
+      <h1 style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin:0">NPIDE</h1>
+      <p style="font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin:4px 0 0">National Policy Intelligence & Delivery Engine</p>
+    </div>
+
+    <!-- Citizen / Admin tabs -->
+    <div class="role-tabs">
+      <button id="tab-user" class="role-tab active" onclick="switchRole('user')">👤 CITIZEN</button>
+      <button id="tab-admin" class="role-tab" onclick="switchRole('admin')">🛡 ADMINISTRATOR</button>
+    </div>
+
+    <!-- ── CITIZEN AUTH SECTION ── -->
+    <div id="citizen-section">
+
+      <!-- Auth mode selector: New User / Returning User -->
+      <div id="auth-mode-selector" class="auth-mode-selector">
+        <div class="auth-mode-card selected" id="card-signup" onclick="setAuthMode('signup')">
+          <div class="mode-icon">🆕</div>
+          <div class="mode-title">New User</div>
+          <div class="mode-sub">First time here? Create your account</div>
+        </div>
+        <div class="auth-mode-card" id="card-signin" onclick="setAuthMode('signin')">
+          <div class="mode-icon">🔑</div>
+          <div class="mode-title">Sign In</div>
+          <div class="mode-sub">Returning? Enter your User ID</div>
+        </div>
+      </div>
+
+      <!-- SIGN UP fields -->
+      <div id="signup-fields">
+        <label class="field-label">Your Full Name</label>
+        <input class="std-input" id="signup-name" placeholder="Enter your full name" onkeydown="if(event.key==='Enter')doLogin()" />
+        <div class="info-note">
+          A unique <strong>User ID</strong> will be generated for you. Save it to sign in next time without re-entering your profile.
+        </div>
+      </div>
+
+      <!-- SIGN IN fields -->
+      <div id="signin-fields" class="hidden">
+        <label class="field-label">Your User ID</label>
+        <input class="std-input" id="signin-userid" placeholder="e.g. NPIDE-A1B2C3" style="font-family:'DM Mono',monospace;letter-spacing:1px" onkeydown="if(event.key==='Enter')doLogin()" />
+        <div class="info-note">
+          Enter the <strong>User ID</strong> you received when you first registered. Your full profile will be restored instantly.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── ADMIN FIELDS ── -->
+    <div id="admin-fields" class="hidden">
+      <label class="field-label">Username</label>
+      <input class="std-input" id="admin-user" placeholder="admin" onkeydown="if(event.key==='Enter')doLogin()" />
+      <label class="field-label">Password</label>
+      <input class="std-input" id="admin-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+
+    <p id="err-msg" class="err-msg hidden"></p>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">START → FIND MY SCHEMES</button>
+    <p id="admin-hint" class="hidden" style="font-size:10px;color:var(--muted);text-align:center;margin-top:12px">Demo: admin / npide2024</p>
+  </div>
+</div>
+
+<!-- ══════════ CHAT ══════════ -->
+<div id="chat-screen" class="hidden">
+  <div id="chat-wrap">
+    <h2 id="chat-title" style="font-size:22px;font-weight:800;margin-bottom:6px">Welcome 👋</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:28px">Answer a few quick questions to get your personalised scheme recommendations.</p>
+    <div class="chat-box" id="chat-box"></div>
+    <div id="opt-area" style="margin-top:12px"></div>
+    <div id="text-area" class="hidden" style="margin-top:8px">
+      <div class="text-row">
+        <input class="chat-input" id="chat-text-input" placeholder="Type your answer…" onkeydown="if(event.key==='Enter')submitChatText()" />
+        <button class="send-btn" onclick="submitChatText()">SEND →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ USER DASHBOARD ══════════ -->
+<div id="user-dashboard" class="hidden">
+  <div class="dash">
+    <div id="returning-banner-wrap"></div>
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:4px">Your Scheme Dashboard</h2>
+    <p id="ud-sub" style="font-size:13px;color:var(--muted);margin-bottom:24px"></p>
+    <div id="ud-profile-card" class="profile-card"></div>
+
+    <!-- User tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px">
+      <button id="utab-schemes" onclick="setUserTab('schemes')" style="padding:10px 20px;background:transparent;border:none;border-bottom:2px solid var(--accent);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:1px">📋 SCHEMES</button>
+      <button id="utab-applications" onclick="setUserTab('applications')" style="padding:10px 20px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:1px">📁 MY APPLICATIONS</button>
+      <button id="utab-grievance" onclick="setUserTab('grievance')" style="padding:10px 20px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:1px">📣 FILE GRIEVANCE</button>
+      <button id="utab-hotspots" onclick="setUserTab('hotspots')" style="padding:10px 20px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:1px">🔥 HOTSPOTS</button>
+    </div>
+
+    <div id="ud-tab-content">
+      <div id="ud-stats" class="stat-row"></div>
+      <div id="ud-priority-banner" class="hidden" style="background:linear-gradient(135deg,#0C4A6E,#1a1030);border:1px solid var(--accent);border-radius:10px;padding:12px 18px;margin-bottom:22px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:20px">⭐</span>
+        <div>
+          <div id="ud-priority-title" style="font-size:12px;font-weight:800;color:var(--accent)"></div>
+          <div id="ud-priority-sub" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+        </div>
+      </div>
+      <div id="cat-filter" class="cat-filter"></div>
+      <div id="scheme-grid" class="scheme-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN DASHBOARD ══════════ -->
+<div id="admin-dashboard" class="hidden">
+  <div class="admin-wrap">
+    <div class="sidebar">
+      <div style="padding:0 20px 16px;font-size:10px;font-weight:800;color:var(--muted);letter-spacing:2px">NAVIGATION</div>
+      <div class="side-item active" onclick="setAdminSection('overview')">📊 Overview</div>
+      <div class="side-item" onclick="setAdminSection('schemes')">📋 Manage Schemes</div>
+      <div class="side-item" onclick="setAdminSection('gaps')">⚠️ Gap Detection</div>
+      <div class="side-item" onclick="setAdminSection('grievances')">🗂 Grievances</div>
+      <div class="side-item" onclick="setAdminSection('prediction')">🧠 Failure Prediction</div>
+      <div class="side-item" onclick="setAdminSection('policy')" style="color:var(--amber)">⚙️ Policy Engine <span style="background:#F59E0B22;color:#F59E0B;border:1px solid #F59E0B44;border-radius:3px;padding:1px 5px;font-size:9px;letter-spacing:1px;margin-left:4px">AI</span></div>
+      <div style="border-top:1px solid var(--border);margin:12px 0"></div>
+      <div style="padding:0 20px">
+        <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:10px">LIVE STATS</div>
+        <div id="sidebar-stats" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div style="padding:16px 20px 0;border-top:1px solid var(--border);margin-top:16px">
+        <div id="api-sidebar-status" style="font-size:10px;color:var(--muted)"></div>
+      </div>
+    </div>
+    <div id="admin-main" class="admin-main"></div>
+  </div>
+</div>
+
+<!-- Scheme Detail Modal -->
+<div id="scheme-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeSchemeModal()">
+  <div class="modal-panel">
+    <div class="modal-header" id="modal-header"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Admin Edit Modal -->
+<div id="edit-modal" class="edit-modal-overlay hidden">
+  <div class="edit-modal-box">
+    <div style="font-weight:800;font-size:15px;margin-bottom:20px;color:var(--amber)">✏️ Edit Scheme</div>
+    <label class="field-label">Scheme Name</label><input class="std-input" id="em-name" />
+    <label class="field-label">Description</label><input class="std-input" id="em-desc" />
+    <label class="field-label">Benefit (₹/year)</label><input class="std-input" type="number" id="em-benefit" />
+    <label class="field-label">Location</label><input class="std-input" id="em-location" />
+    <div class="flex-gap">
+      <button class="login-btn" style="margin:0;padding:10px 20px;width:auto;background:var(--amber);border:none" onclick="saveEditModal()">SAVE</button>
+      <button class="logout-btn" style="padding:10px 20px" onclick="closeEditModal()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- PE Deactivate Modal -->
+<div class="confirm-modal hidden" id="pe-confirm-modal">
+  <div class="confirm-box">
+    <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#EF4444">⚠️ CONFIRM DEACTIVATION</div>
+    <div style="font-size:13px;color:#64748B;margin-bottom:20px" id="pe-confirm-text"></div>
+    <div class="pe-label" style="margin-bottom:8px">SQL THAT WILL EXECUTE</div>
+    <div class="sql-box" id="pe-confirm-sql"></div>
+    <div class="flex-gap" style="margin-top:20px">
+      <button class="pe-btn" style="background:#EF4444;color:#fff;border-color:#EF4444" onclick="confirmDeactivate()">CONFIRM DEACTIVATE</button>
+      <button class="pe-btn" style="background:transparent;color:#64748B;border-color:#64748B" onclick="closePEConfirm()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ USER ID REVEAL MODAL ══════════════ -->
+<div id="userid-modal" class="modal-overlay hidden">
+  <div class="modal-panel" style="max-width:420px">
+    <div style="padding:36px 32px;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">🎉</div>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Account Created!</h2>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:28px">Your unique User ID has been generated. <strong style="color:var(--text)">Save this</strong> — you'll need it to sign in next time.</p>
+      <div style="background:var(--dim);border:2px solid var(--green);border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:var(--muted);margin-bottom:8px">YOUR USER ID</div>
+        <div id="new-userid-display" style="font-size:28px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace;letter-spacing:2px"></div>
+      </div>
+      <button onclick="copyAndDismissUserId()" style="width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:800;letter-spacing:1px;margin-bottom:10px">📋 COPY & CONTINUE →</button>
+      <p style="font-size:10px;color:var(--muted)">This ID is stored in your browser. Write it down as a backup.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   NPIDE — WITH SIGN UP / SIGN IN USER FLOW
+   New user  → generates UserID → chat onboarding
+   Returning → enter UserID   → instant dashboard
+   ═══════════════════════════════════════════════════════════ */
+
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000/api/v1' : null;
+
+let backendOnline = false;
+
+async function checkBackend() {
+  if (!API_BASE) return;
+  try { const r = await fetch(API_BASE + '/health', { signal: AbortSignal.timeout(2000) }); backendOnline = r.ok; }
+  catch { backendOnline = false; }
+  updateApiStatus();
+}
+function updateApiStatus() {
+  const dot = backendOnline ? '<span class="api-dot live"></span>Backend live' : '<span class="api-dot offline"></span>Demo mode';
+  ['api-status','api-sidebar-status'].forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML=dot; });
+}
+checkBackend();
+
+/* ─── USER ID UTILITIES ─── */
+function generateUserId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id = 'NPIDE-';
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+function saveUserById(userId, data) {
+  // Store by UserID for sign-in lookup
+  localStorage.setItem(`npide_uid_${userId}`, JSON.stringify(data));
+}
+function loadUserById(userId) {
+  return JSON.parse(localStorage.getItem(`npide_uid_${userId}`) || 'null');
+}
+// Keep legacy name-based session for backwards compat
+function saveSession() {
+  if (!state.currentUser) return;
+  const s = { profile: state.profile, appliedSchemes: state.appliedSchemes };
+  if (state.currentUser.userId) saveUserById(state.currentUser.userId, { ...s, name: state.currentUser.name, userId: state.currentUser.userId });
+  localStorage.setItem(`npide_session_${state.currentUser.name.toLowerCase()}`, JSON.stringify(s));
+}
+function loadSession(name) {
+  return JSON.parse(localStorage.getItem(`npide_session_${name.toLowerCase()}`) || 'null');
+}
+function clearSession() {
+  if (!state.currentUser) return;
+  if (state.currentUser.userId) localStorage.removeItem(`npide_uid_${state.currentUser.userId}`);
+  localStorage.removeItem(`npide_session_${state.currentUser.name.toLowerCase()}`);
+}
+
+/* ─── SCHEMES DATA ─── */
+const BASE_SCHEMES = [
+  {id:1,name:"PM Scholarship for Central Govt Employees",category:"student",tags:["student","scholarship","central govt"],benefit:36000,location:"All",desc:"Merit scholarship for children of central govt employees.",eligibility:"Student, family income < ₹8L",applyUrl:"https://scholarships.gov.in",ministry:"Ministry of Personnel",launchedYear:"2006",documents:["Aadhaar Card","Income Certificate","Marksheet","Bank Passbook","Service Certificate of parent"],howToApply:"Register on scholarships.gov.in → Fill form → Upload documents → Submit before deadline",deadline:"October 31 every year",helpline:"0120-6619540",details:"₹36,000/year for professional courses to meritorious students of central govt employees.",min_income:0,max_income:800000,gender:"All",occupation:"Student",min_age:16,max_age:30},
+  {id:2,name:"National Scholarship Portal (NSP)",category:"student",tags:["student","scholarship","minority"],benefit:25000,location:"All",desc:"Scholarships for SC/ST/OBC and minority students.",eligibility:"Student, income < ₹2.5L",applyUrl:"https://scholarships.gov.in",ministry:"Ministry of Minority Affairs",launchedYear:"2013",documents:["Aadhaar","Caste Certificate","Income Certificate","Marksheet"],howToApply:"Visit scholarships.gov.in → Register → Choose category → Verify via OTP",deadline:"November 30 every year",helpline:"0120-6619540",details:"One-stop platform for central and state scholarships.",min_income:0,max_income:250000,gender:"All",occupation:"Student",min_age:14,max_age:32},
+  {id:3,name:"Pragati Scholarship (AICTE)",category:"student",tags:["student","technical","female"],benefit:50000,location:"All",desc:"For female students in technical education.",eligibility:"Female student in AICTE college",applyUrl:"https://www.aicte-india.org",ministry:"AICTE",launchedYear:"2014",documents:["Aadhaar","College admission proof","Income certificate","Bank passbook"],howToApply:"Apply at AICTE portal → Fill Pragati form → Attach docs → Submit",deadline:"October every year",helpline:"011-29581000",details:"₹50,000/year to female students in technical education.",min_income:0,max_income:800000,gender:"Female",occupation:"Student",min_age:16,max_age:30},
+  {id:4,name:"PM Kisan Samman Nidhi",category:"farmer",tags:["farmer","income support","agriculture"],benefit:6000,location:"All",desc:"Direct income support ₹6000/year to farmer families.",eligibility:"Farmer, landholding < 2 hectare",applyUrl:"https://pmkisan.gov.in",ministry:"Ministry of Agriculture",launchedYear:"2019",documents:["Aadhaar","Land ownership records","Bank account linked to Aadhaar"],howToApply:"Visit pmkisan.gov.in → Farmer Corner → New Registration → Enter Aadhaar",deadline:"Ongoing",helpline:"155261",details:"₹6,000/year in 3 installments of ₹2,000 directly to farmer's bank.",min_income:0,max_income:200000,gender:"All",occupation:"Farmer",min_age:18,max_age:80},
+  {id:5,name:"PM Fasal Bima Yojana",category:"farmer",tags:["farmer","crop insurance"],benefit:null,location:"All",desc:"Crop insurance against natural calamities.",eligibility:"All farmers with crop loans",applyUrl:"https://pmfby.gov.in",ministry:"Ministry of Agriculture",launchedYear:"2016",documents:["Aadhaar","Land records","Bank passbook","Crop sowing certificate"],howToApply:"Apply through bank where crop loan is taken OR via nearest CSC",deadline:"Varies by season",helpline:"1800-200-7710",details:"Premium as low as 2% for Kharif crops and 1.5% for Rabi crops.",min_income:0,max_income:999999,gender:"All",occupation:"Farmer",min_age:18,max_age:120},
+  {id:6,name:"Kisan Credit Card",category:"farmer",tags:["farmer","credit","loan"],benefit:300000,location:"All",desc:"Flexible credit up to ₹3L for farm operations.",eligibility:"Farmer, any land size",applyUrl:"https://www.nabard.org",ministry:"Ministry of Agriculture / NABARD",launchedYear:"1998",documents:["Aadhaar","Land records","Passport photo","Bank account"],howToApply:"Visit nearest bank → Request KCC form → Submit documents",deadline:"Apply any time",helpline:"1800-11-2211",details:"Revolving credit for farming. Interest ~7% with 3% govt subvention.",min_income:0,max_income:999999,gender:"All",occupation:"Farmer",min_age:18,max_age:75},
+  {id:7,name:"Karnataka Rajiv Gandhi Scheme",category:"farmer",tags:["farmer","state","Karnataka"],benefit:10000,location:"Karnataka",desc:"State supplement for small farmers.",eligibility:"Karnataka farmer, income < ₹1.8L",applyUrl:"https://sevasindhu.karnataka.gov.in",ministry:"Karnataka Dept. of Agriculture",launchedYear:"2020",documents:["Aadhaar","Ration card","RTC","Bank passbook","Income certificate"],howToApply:"Apply at sevasindhu.karnataka.gov.in or nearest Nada Kacheri",deadline:"Before March 31 each year",helpline:"080-44554455",details:"State-level supplement for small and marginal farmers of Karnataka.",min_income:0,max_income:180000,gender:"All",occupation:"Farmer",min_age:18,max_age:65},
+  {id:8,name:"Ujjwala Yojana",category:"general",tags:["women","lpg","bpl"],benefit:1600,location:"All",desc:"Free LPG connection for BPL families.",eligibility:"Female, BPL, income < ₹1.5L",applyUrl:"https://www.pmuy.gov.in",ministry:"Ministry of Petroleum",launchedYear:"2016",documents:["Aadhaar","BPL ration card","Bank account in woman's name"],howToApply:"Visit nearest LPG distributor → Fill KYC form → Free connection issued",deadline:"Ongoing",helpline:"1906",details:"Free LPG connection with first cylinder and stove to BPL women.",min_income:0,max_income:150000,gender:"Female",occupation:"All",min_age:18,max_age:120},
+  {id:9,name:"MGNREGA",category:"labour",tags:["daily wage","employment","rural"],benefit:24000,location:"All",desc:"Guaranteed 100 days employment per year.",eligibility:"Rural household, daily wage worker",applyUrl:"https://nrega.nic.in",ministry:"Ministry of Rural Development",launchedYear:"2005",documents:["Aadhaar","Ration card","Bank account","Passport photo"],howToApply:"Apply at Gram Panchayat → Register → Get Job Card → Request work",deadline:"Apply any time",helpline:"1800-111-555",details:"Legal right to 100 days of unskilled wage employment per household.",min_income:0,max_income:200000,gender:"All",occupation:"Daily Wage",min_age:18,max_age:120},
+  {id:10,name:"Mudra Loan Yojana",category:"business",tags:["self-employed","loan","business"],benefit:500000,location:"All",desc:"Collateral-free business loans up to ₹10L.",eligibility:"Self-employed, small business",applyUrl:"https://www.mudra.org.in",ministry:"Ministry of Finance / SIDBI",launchedYear:"2015",documents:["Aadhaar","PAN","Business proof","Bank statements"],howToApply:"Apply at any bank → No collateral required",deadline:"Apply any time",helpline:"1800-180-1111",details:"Shishu (<₹50K), Kishor (₹50K–5L), Tarun (₹5L–10L).",min_income:0,max_income:600000,gender:"All",occupation:"Self-employed",min_age:18,max_age:65},
+  {id:11,name:"Pradhan Mantri Awas Yojana",category:"general",tags:["housing","homeless","subsidy"],benefit:250000,location:"All",desc:"Housing subsidy for homeless families.",eligibility:"No pucca house, income < ₹3L",applyUrl:"https://pmaymis.gov.in",ministry:"Ministry of Housing",launchedYear:"2015",documents:["Aadhaar","Income certificate","Self-declaration no pucca house","Bank account"],howToApply:"Apply at pmaymis.gov.in or CSC → Aadhaar verification",deadline:"Ongoing",helpline:"1800-11-6163",details:"Credit-linked subsidy of ₹2.5 lakh for EWS/LIG categories.",min_income:0,max_income:300000,gender:"All",occupation:"All",min_age:21,max_age:120},
+  {id:12,name:"National Health Mission",category:"health",tags:["health","rural","bpl"],benefit:50000,location:"Karnataka",desc:"Free healthcare for rural BPL families.",eligibility:"Karnataka resident, income < ₹2.5L",applyUrl:"https://nhm.gov.in",ministry:"Ministry of Health",launchedYear:"2005",documents:["Aadhaar","BPL card","Ration card"],howToApply:"Enroll at nearest PHC or district hospital → Show BPL card",deadline:"Ongoing",helpline:"104",details:"Covers free OPD, IPD, diagnostics, medicines, maternal & child health.",min_income:0,max_income:250000,gender:"All",occupation:"All",min_age:0,max_age:120},
+  {id:13,name:"Beti Bachao Beti Padhao",category:"student",tags:["student","girl","education"],benefit:5000,location:"All",desc:"Girl child welfare and education scheme.",eligibility:"Female, age < 18",applyUrl:"https://wcd.nic.in",ministry:"Ministry of Women & Child Development",launchedYear:"2015",documents:["Aadhaar","Birth certificate","School enrolment proof"],howToApply:"Register at Anganwadi centre or WCD office",deadline:"Ongoing",helpline:"1091",details:"Aims to improve child sex ratio and promote girl child education.",min_income:0,max_income:500000,gender:"Female",occupation:"All",min_age:0,max_age:18},
+  {id:14,name:"Atal Pension Yojana",category:"general",tags:["pension","unorganised","retirement"],benefit:null,location:"All",desc:"Pension for unorganised sector workers.",eligibility:"Age 18-40, bank account holder",applyUrl:"https://npscra.nsdl.co.in",ministry:"Ministry of Finance / PFRDA",launchedYear:"2015",documents:["Aadhaar","Bank account","Mobile number"],howToApply:"Visit bank → Fill APY registration form → Auto-debit starts",deadline:"Enroll before age 40",helpline:"1800-110-069",details:"Guaranteed pension of ₹1,000–5,000/month after age 60.",min_income:0,max_income:999999,gender:"All",occupation:"All",min_age:18,max_age:40},
+  {id:15,name:"Skill India Mission",category:"student",tags:["student","skill","vocational","youth"],benefit:8000,location:"All",desc:"Free skill development and certification.",eligibility:"Age 15-45, any background",applyUrl:"https://www.skillindia.gov.in",ministry:"Ministry of Skill Development",launchedYear:"2015",documents:["Aadhaar","Age proof","Educational certificate"],howToApply:"Register at skillindia.gov.in or visit PMKK → Choose trade → Enroll",deadline:"Ongoing — batch-wise",helpline:"1800-123-9626",details:"Free training in 300+ job roles. Industry-recognized certification.",min_income:0,max_income:999999,gender:"All",occupation:"All",min_age:15,max_age:45},
+];
+
+function getAllSchemes() {
+  const extra = JSON.parse(localStorage.getItem('npide_extra_schemes') || '[]');
+  return [...BASE_SCHEMES, ...extra];
+}
+function saveExtraScheme(s) {
+  const extra = JSON.parse(localStorage.getItem('npide_extra_schemes') || '[]');
+  extra.push(s); localStorage.setItem('npide_extra_schemes', JSON.stringify(extra));
+}
+
+const OCCUPATION_CATEGORY = {Student:"student",Farmer:"farmer","Daily Wage":"labour","Self-employed":"business",Homemaker:"general",Salaried:"general",Other:"general"};
+const INCOME_MAP = {"Below ₹1 Lakh":80000,"₹1L – ₹2.5L":175000,"₹2.5L – ₹5L":375000,"₹5L – ₹8L":650000,"Above ₹8L":900000};
+const catLabel = {all:"All",student:"📚 Student",farmer:"🌾 Farmer",labour:"👷 Worker",business:"💼 Business",health:"🏥 Health",general:"🏠 General"};
+const catColor = {student:"#0EA5E9",farmer:"#10B981",labour:"#F59E0B",business:"#A78BFA",health:"#EF4444",general:"#64748B"};
+const STATE_HOTSPOTS = [
+  {state:"Karnataka",complaints:30,unresolved:24,officer:"State Grievance Cell",zone:"State-wide",severity:"critical",status:"open",topIssue:"Delay and corruption complaints dominate, with repeated payment pending and bribe-demand cases."},
+  {state:"Bihar",complaints:30,unresolved:17,officer:"State Grievance Cell",zone:"State-wide",severity:"high",status:"open",topIssue:"Delay complaints lead the backlog, especially connection delay, gas delay, and medical delay cases."},
+  {state:"Kerala",complaints:24,unresolved:18,officer:"State Grievance Cell",zone:"State-wide",severity:"high",status:"open",topIssue:"Healthcare delayed and pension delay complaints are the biggest recurring issues in the SQL data."},
+  {state:"UP",complaints:24,unresolved:18,officer:"State Grievance Cell",zone:"State-wide",severity:"high",status:"open",topIssue:"Wrong rejection is the top category, with repeated payment issue and job denied wrongly complaints."},
+  {state:"Rajasthan",complaints:18,unresolved:18,officer:"State Grievance Cell",zone:"State-wide",severity:"high",status:"open",topIssue:"Wrong rejection dominates, especially housing denied and gas subsidy delay grievances."},
+  {state:"Telangana",complaints:18,unresolved:12,officer:"State Grievance Cell",zone:"State-wide",severity:"high",status:"open",topIssue:"The SQL mix is evenly split across no awareness, delay, and corruption complaints."},
+  {state:"Tamil Nadu",complaints:18,unresolved:18,officer:"State Grievance Cell",zone:"State-wide",severity:"high",status:"open",topIssue:"Delay cases dominate, led by pension stuck, pension issue, and healthcare issue complaints."},
+  {state:"Maharashtra",complaints:18,unresolved:18,officer:"State Grievance Cell",zone:"State-wide",severity:"high",status:"open",topIssue:"Loan-related delays and wrong rejection complaints appear most often in the grievance data."}
+];
+const FAILURE_PREDICTION_DISTRICTS = [
+  {name:"Raichur",population:1924000,schemes:12},
+  {name:"Bidar",population:1703000,schemes:9},
+  {name:"Yadgir",population:1174000,schemes:7},
+  {name:"Kalaburagi",population:2564000,schemes:14},
+  {name:"Koppal",population:1391000,schemes:8},
+  {name:"Vijayapura",population:2175000,schemes:11},
+  {name:"Bagalkot",population:1888000,schemes:10},
+  {name:"Haveri",population:1598000,schemes:13},
+  {name:"Gadag",population:1064000,schemes:8},
+  {name:"Dharwad",population:1847000,schemes:15},
+  {name:"Mysuru",population:3001000,schemes:18},
+  {name:"Mandya",population:1760000,schemes:11},
+  {name:"Hassan",population:1776000,schemes:10},
+  {name:"Tumakuru",population:2681000,schemes:13},
+  {name:"Bengaluru Rural",population:990000,schemes:16}
+];
+
+const CHAT_FLOW = [
+  {key:"age",bot:n=>`नमस्ते ${n}! 🙏 I'm your policy assistant. Let's find every scheme you're eligible for. First — how old are you?`,type:"number",field:"age"},
+  {key:"gender",bot:"What is your gender?",type:"options",options:["Male","Female","Other"],field:"gender"},
+  {key:"location",bot:"Which state do you live in?",type:"options",options:["Karnataka","Kerala","Rajasthan","Bihar","West Bengal","Uttar Pradesh","Telangana","Maharashtra","Other"],field:"location"},
+  {key:"occupation",bot:"What best describes your current occupation?",type:"options",options:["Student","Farmer","Daily Wage","Self-employed","Homemaker","Salaried","Other"],field:"occupation"},
+  {key:"income",bot:"What is your approximate annual family income?",type:"options",options:["Below ₹1 Lakh","₹1L – ₹2.5L","₹2.5L – ₹5L","₹5L – ₹8L","Above ₹8L"],field:"income_range"},
+  {key:"education",bot:"What is your highest education level?",type:"options",options:["Below 10th","10th Pass","12th Pass","Graduate","Post Graduate"],field:"education"},
+  {key:"done",bot:n=>`Perfect, ${n}! 🎉 Found all schemes matched to your profile. Your personalised dashboard is ready!`,type:"done"},
+];
+
+/* ═══ STATE ═══ */
+let state = {
+  currentUser: null, profile: {}, chatStep: 0,
+  currentFilter: "all", appliedSchemes: [], userTab: "schemes",
+  hotspotSeverity: "all", hotspotStatus: "all",
+  adminSection: "overview", peTab: 0, peLogs: [], peSchemes: null,
+  peDeactivateId: null, peLoading: false, peExtracted: null, peFile: null,
+};
+
+/* ═══ AUTH MODE (signup / signin) ═══ */
+let authMode = 'signup'; // 'signup' or 'signin'
+
+function setAuthMode(mode) {
+  authMode = mode;
+  document.getElementById('card-signup').classList.toggle('selected', mode === 'signup');
+  document.getElementById('card-signin').classList.toggle('selected', mode === 'signin');
+  document.getElementById('signup-fields').classList.toggle('hidden', mode !== 'signup');
+  document.getElementById('signin-fields').classList.toggle('hidden', mode !== 'signin');
+  const btn = document.getElementById('login-btn');
+  btn.textContent = mode === 'signup' ? 'CREATE ACCOUNT & START →' : 'SIGN IN →';
+  document.getElementById('err-msg').classList.add('hidden');
+}
+
+/* ═══ ROLE ═══ */
+let currentRole = "user";
+function switchRole(r) {
+  currentRole = r;
+  document.getElementById("tab-user").className = "role-tab"+(r==="user"?" active":"");
+  document.getElementById("tab-admin").className = "role-tab"+(r==="admin"?" active":"");
+  document.getElementById("citizen-section").classList.toggle("hidden", r!=="user");
+  document.getElementById("admin-fields").classList.toggle("hidden", r!=="admin");
+  document.getElementById("admin-hint").classList.toggle("hidden", r!=="admin");
+  document.getElementById("login-btn").textContent = r==="user" ? (authMode==='signup'?"CREATE ACCOUNT & START →":"SIGN IN →") : "LOGIN AS ADMIN";
+  document.getElementById("err-msg").classList.add("hidden");
+}
+
+/* ═══ LOGIN ═══ */
+function doLogin() {
+  const err = document.getElementById("err-msg");
+  err.classList.add("hidden");
+
+  if (currentRole === "admin") {
+    const u = document.getElementById("admin-user").value;
+    const p = document.getElementById("admin-pass").value;
+    if (u === "admin" && p === "npide2024") {
+      state.currentUser = {role:"admin", name:"Administrator"};
+      showTopbar(); showScreen("admin");
+    } else { err.textContent="⚠ Invalid admin credentials"; err.classList.remove("hidden"); }
+    return;
+  }
+
+  // ── CITIZEN: SIGN UP ──
+  if (authMode === 'signup') {
+    const n = document.getElementById("signup-name").value.trim();
+    if (n.length < 2) { err.textContent="⚠ Please enter your full name (at least 2 characters)"; err.classList.remove("hidden"); return; }
+    const userId = generateUserId();
+    state.currentUser = {role:"user", name:n, userId};
+    state.profile = {name: n};
+    state.appliedSchemes = [];
+    showTopbar();
+    // Show UserID reveal modal, then start chat
+    showUserIdModal(userId);
+    return;
+  }
+
+  // ── CITIZEN: SIGN IN ──
+  if (authMode === 'signin') {
+    const uid = document.getElementById("signin-userid").value.trim().toUpperCase();
+    if (!uid.startsWith('NPIDE-') || uid.length < 12) {
+      err.textContent = "⚠ Invalid User ID format. It should look like NPIDE-XXXXXX";
+      err.classList.remove("hidden"); return;
+    }
+    const saved = loadUserById(uid);
+    if (!saved) {
+      err.textContent = "⚠ No account found with this User ID. Please check and try again.";
+      err.classList.remove("hidden"); return;
+    }
+    state.currentUser = {role:"user", name:saved.name, userId:uid};
+    state.profile = saved.profile || {name: saved.name};
+    state.appliedSchemes = saved.appliedSchemes || [];
+    showTopbar();
+    showReturningUser();
+  }
+}
+
+/* ═══ USER ID MODAL ═══ */
+function showUserIdModal(userId) {
+  document.getElementById('new-userid-display').textContent = userId;
+  document.getElementById('userid-modal').classList.remove('hidden');
+}
+function copyAndDismissUserId() {
+  const uid = state.currentUser?.userId;
+  if (uid && navigator.clipboard) navigator.clipboard.writeText(uid).catch(()=>{});
+  document.getElementById('userid-modal').classList.add('hidden');
+  startChat();
+}
+
+/* ═══ RETURNING USER ═══ */
+function showReturningUser() {
+  showScreen("user");
+  renderUserDashboard();
+  const p = state.profile;
+  const banner = document.getElementById("returning-banner-wrap");
+  banner.innerHTML = `
+    <div class="returning-banner anim-in">
+      <span style="font-size:26px">👋</span>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:800;color:var(--green)">Welcome back, ${escHtml(p.name||state.currentUser.name)}!</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">Signed in with ID <span style="font-family:'DM Mono',monospace;color:var(--accent)">${state.currentUser.userId}</span> · Profile restored.</div>
+      </div>
+      <button onclick="restartChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:6px 14px;font-size:11px">Update Profile</button>
+      <button onclick="clearSessionAndLogout()" style="background:transparent;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:6px 14px;font-size:11px">Clear & Restart</button>
+    </div>`;
+}
+
+function restartChat() {
+  document.getElementById("returning-banner-wrap").innerHTML = "";
+  state.profile = {name: state.currentUser.name};
+  state.appliedSchemes = [];
+  startChat();
+}
+function clearSessionAndLogout() {
+  clearSession();
+  logout();
+}
+
+function showTopbar() {
+  const u = state.currentUser;
+  document.getElementById("topbar").classList.remove("hidden");
+  document.getElementById("top-avatar").textContent = u.name[0].toUpperCase();
+  document.getElementById("top-name").textContent = u.name;
+  document.getElementById("top-userid").textContent = u.userId ? u.userId : '';
+  const rp = document.getElementById("top-role-pill");
+  rp.textContent = u.role.toUpperCase();
+  rp.style.cssText = u.role==="admin" ? "background:#F59E0B22;color:#F59E0B;border:1px solid #F59E0B44" : "background:#0EA5E922;color:#0EA5E9;border:1px solid #0EA5E944";
+  updateApiStatus();
+}
+
+function logout() {
+  if (state.currentUser) saveSession();
+  state = {...state, currentUser:null, profile:{}, chatStep:0, currentFilter:"all", appliedSchemes:[], adminSection:"overview", peTab:0, peLogs:[], peSchemes:null};
+  document.getElementById("topbar").classList.add("hidden");
+  ['signup-name','signin-userid','admin-user','admin-pass'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById("returning-banner-wrap").innerHTML = "";
+  authMode = 'signup';
+  setAuthMode('signup');
+  showScreen("login");
+}
+
+function showScreen(s) {
+  ["login-wrap","chat-screen","user-dashboard","admin-dashboard"].forEach(id => document.getElementById(id).classList.add("hidden"));
+  if(s==="login") document.getElementById("login-wrap").classList.remove("hidden");
+  else if(s==="chat") document.getElementById("chat-screen").classList.remove("hidden");
+  else if(s==="user") document.getElementById("user-dashboard").classList.remove("hidden");
+  else if(s==="admin") { document.getElementById("admin-dashboard").classList.remove("hidden"); renderAdminSection("overview"); }
+}
+
+/* ═══ HELPERS ═══ */
+function toINR(n){if(!n&&n!==0)return"—";return"₹"+Number(n).toLocaleString("en-IN");}
+function makePill(text,color){return`<span class="pill" style="background:${color}22;color:${color};border:1px solid ${color}44">${escHtml(text)}</span>`;}
+function makePEChip(text,color){return`<span class="pe-chip" style="background:${color}22;color:${color};border-color:${color}44">${escHtml(text)}</span>`;}
+function escHtml(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function schemeToSQL(s,isUpdate=false,oldId=null){
+  if(isUpdate)return`UPDATE schemes SET\n  scheme_name = '${s.name}',\n  min_income = ${s.min_income||0},\n  max_income = ${s.max_income||500000},\n  eligible_gender = '${s.gender||"All"}',\n  eligible_location = '${s.location||"All"}',\n  eligible_occupation = '${s.occupation||"All"}',\n  min_age = ${s.min_age||0}, max_age = ${s.max_age||120},\n  benefit_amount = ${s.benefit||"NULL"}\nWHERE scheme_id = ${oldId};`;
+  return`INSERT INTO schemes (\n  scheme_name, description, min_income, max_income,\n  eligible_gender, eligible_location, eligible_occupation,\n  min_age, max_age, benefit_amount, is_active\n) VALUES (\n  '${(s.name||"").replace(/'/g,"''")}',\n  '${(s.description||"").replace(/'/g,"''")}',\n  ${s.min_income||0}, ${s.max_income||500000},\n  '${s.gender||"All"}', '${s.location||"All"}', '${s.occupation||"All"}',\n  ${s.min_age||0}, ${s.max_age||120}, ${s.benefit||"NULL"}, TRUE\n);`;}
+
+function getPESchemes() {
+  if (!state.peSchemes) {
+    const stored = JSON.parse(localStorage.getItem('npide_pe_schemes') || 'null');
+    state.peSchemes = stored || BASE_SCHEMES.slice(0,6).map(s=>({id:s.id,name:s.name,min_income:s.min_income,max_income:s.max_income,gender:s.gender||"All",location:s.location,occupation:s.occupation||"All",min_age:s.min_age||0,max_age:s.max_age||120,benefit:s.benefit,active:true,description:s.desc}));
+  }
+  return state.peSchemes;
+}
+function savePESchemes() { localStorage.setItem('npide_pe_schemes', JSON.stringify(state.peSchemes)); }
+
+/* ═══ ELIGIBILITY MATCHING ═══ */
+function matchSchemes(profile) {
+  const income = INCOME_MAP[profile.income_range] || 300000;
+  const age = parseInt(profile.age) || 30;
+  return getAllSchemes().filter(s => {
+    if (s.location !== "All" && s.location !== profile.location) return false;
+    if (s.min_income !== undefined && income < s.min_income) return false;
+    if (s.max_income !== undefined && income > s.max_income) return false;
+    if (s.min_age !== undefined && age < s.min_age) return false;
+    if (s.max_age !== undefined && age > s.max_age) return false;
+    if (s.gender && s.gender !== "All" && s.gender !== profile.gender) return false;
+    if (s.occupation && s.occupation !== "All" && s.occupation !== profile.occupation) return false;
+    return true;
+  }).sort((a,b) => {
+    const cat = OCCUPATION_CATEGORY[profile.occupation] || "general";
+    return (a.category===cat&&b.category!==cat)?-1:(a.category!==cat&&b.category===cat)?1:0;
+  });
+}
+
+/* ═══ CHATBOT ═══ */
+function startChat() {
+  showScreen("chat");
+  document.getElementById("chat-title").textContent = "Hi, "+state.currentUser.name+" 👋";
+  document.getElementById("chat-box").innerHTML = "";
+  state.chatStep = 0;
+  state.profile = {name: state.currentUser.name};
+  setTimeout(()=>botSay(getStepText(0)), 300);
+}
+function getStepText(step){ const s=CHAT_FLOW[step]; return typeof s.bot==="function"?s.bot(state.currentUser.name):s.bot; }
+function botSay(text){ showTyping(); setTimeout(()=>{ hideTyping(); addBubble(text,true); renderChatInput(); }, 750); }
+function addBubble(text,isBot){
+  const box=document.getElementById("chat-box");
+  const wrap=document.createElement("div"); wrap.className="bubble"+(isBot?"":" user"); wrap.classList.add("anim-in");
+  wrap.innerHTML=isBot?`<div class="bot-icon">🤖</div><div class="msg bot">${text}</div>`:`<div class="msg user">${text}</div>`;
+  box.appendChild(wrap); box.scrollTop=box.scrollHeight;
+}
+let typingEl=null;
+function showTyping(){ const box=document.getElementById("chat-box"); typingEl=document.createElement("div"); typingEl.className="bubble"; typingEl.innerHTML=`<div class="bot-icon">🤖</div><div class="msg bot" style="display:flex;gap:4px;align-items:center;padding:14px 18px"><div class="typing-dot td0"></div><div class="typing-dot td1"></div><div class="typing-dot td2"></div></div>`; box.appendChild(typingEl); box.scrollTop=box.scrollHeight; }
+function hideTyping(){ if(typingEl){typingEl.remove();typingEl=null;} }
+function renderChatInput(){
+  const step=state.chatStep; if(step>=CHAT_FLOW.length)return;
+  const cur=CHAT_FLOW[step];
+  const optArea=document.getElementById("opt-area"); const textArea=document.getElementById("text-area");
+  optArea.innerHTML=""; textArea.classList.add("hidden");
+  if(cur.type==="options"){
+    const grid=document.createElement("div"); grid.className="opt-grid";
+    cur.options.forEach(o=>{ const btn=document.createElement("button"); btn.className="opt-btn"; btn.textContent=o; btn.onclick=()=>handleChatAnswer(o); grid.appendChild(btn); }); optArea.appendChild(grid);
+  } else if(cur.type==="number"||cur.type==="text"){
+    textArea.classList.remove("hidden"); const inp=document.getElementById("chat-text-input"); inp.type=cur.type==="number"?"number":"text"; inp.placeholder=cur.type==="number"?"Enter your age…":"Type your answer…"; inp.value=""; inp.focus();
+  }
+}
+function submitChatText(){ const v=document.getElementById("chat-text-input").value.trim(); if(!v)return; handleChatAnswer(v); }
+function handleChatAnswer(value){
+  const cur=CHAT_FLOW[state.chatStep]; addBubble(String(value),false);
+  state.profile[cur.field]=value;
+  document.getElementById("opt-area").innerHTML=""; document.getElementById("text-area").classList.add("hidden");
+  const nextStep=state.chatStep+1; state.chatStep=nextStep;
+  if(nextStep>=CHAT_FLOW.length)return;
+  const next=CHAT_FLOW[nextStep];
+  const txt=typeof next.bot==="function"?next.bot(state.profile.name||state.currentUser.name):next.bot;
+  if(next.type==="done"){
+    showTyping(); setTimeout(()=>{ hideTyping(); addBubble(txt,true); },800);
+    setTimeout(()=>{ saveSession(); showScreen("user"); renderUserDashboard(); },2200);
+  } else { botSay(txt); }
+}
+
+/* ═══ USER DASHBOARD ═══ */
+let currentUserTab = "schemes";
+function setUserTab(tab){
+  currentUserTab=tab;
+  ["schemes","applications","grievance","hotspots"].forEach(t=>{ const btn=document.getElementById("utab-"+t); if(btn){ btn.style.borderBottomColor=t===tab?"var(--accent)":"transparent"; btn.style.color=t===tab?"var(--accent)":"var(--muted)"; } });
+  renderUserTabContent();
+}
+
+function renderUserDashboard(){
+  const p=state.profile; const primaryCat=OCCUPATION_CATEGORY[p.occupation]||"general";
+  window._matched=matchSchemes(p); window._primaryCat=primaryCat;
+  const highlighted=window._matched.filter(s=>s.category===primaryCat);
+  document.getElementById("ud-sub").innerHTML=`Personalised for <strong>${p.occupation||"you"}</strong> in <strong>${p.location||"India"}</strong> · ${window._matched.length} schemes found`;
+  const pc=document.getElementById("ud-profile-card");
+  pc.innerHTML=`
+    <div class="avatar" style="width:44px;height:44px;font-size:18px">${(p.name||"U")[0]}</div>
+    <div>
+      <div style="font-weight:800;font-size:15px">${escHtml(p.name||"")}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Age ${p.age||"—"} · ${p.education||""}</div>
+      ${state.currentUser.userId?`<div style="font-size:10px;color:var(--accent);font-family:'DM Mono',monospace;margin-top:3px">${state.currentUser.userId}</div>`:""}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-left:8px">
+      ${[p.occupation,p.location,p.income_range,p.gender].map((t,i)=>makePill(t||"—",["#0EA5E9","#10B981","#F59E0B","#64748B"][i])).join("")}
+    </div>`;
+  if(highlighted.length>0){
+    document.getElementById("ud-priority-banner").classList.remove("hidden");
+    document.getElementById("ud-priority-title").textContent=`TOP PICKS FOR ${(p.occupation||"").toUpperCase()}S`;
+    document.getElementById("ud-priority-sub").textContent=`${highlighted.length} schemes specifically designed for your occupation.`;
+  }
+  setUserTab("schemes");
+}
+
+function renderUserTabContent(){ const tab=document.getElementById("ud-tab-content"); if(currentUserTab==="schemes") renderSchemesTab(tab); else if(currentUserTab==="applications") renderApplicationsTab(tab); else if(currentUserTab==="grievance") renderGrievanceTab(tab); else if(currentUserTab==="hotspots") renderHotspotsTab(tab); }
+
+function renderSchemesTab(tab){
+  const p=state.profile,primaryCat=window._primaryCat,matched=window._matched;
+  tab.innerHTML=`<div id="ud-stats" class="stat-row">${[{num:matched.length,label:"Schemes Found",color:"#0EA5E9"},{num:matched.filter(s=>s.category===primaryCat).length,label:`For ${p.occupation||""}s`,color:"#10B981"},{num:state.appliedSchemes.length,label:"Applied",color:"#F59E0B"},{num:matched.length-state.appliedSchemes.length,label:"Pending Action",color:"#EF4444"}].map(s=>`<div class="stat-card" style="border-color:${s.color}44"><div class="stat-num" style="color:${s.color}">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join("")}</div><div id="cat-filter" class="cat-filter"></div><div id="scheme-grid" class="scheme-grid"></div>`;
+  renderCatFilter(matched,primaryCat); renderSchemeGrid(matched,primaryCat);
+}
+
+function renderApplicationsTab(tab){
+  const apps=state.appliedSchemes.map(id=>getAllSchemes().find(s=>s.id===id)).filter(Boolean);
+  tab.innerHTML=`<div style="margin-bottom:20px"><h3 style="font-size:16px;font-weight:800;margin-bottom:4px">My Applications</h3><p style="font-size:12px;color:var(--muted)">${apps.length} applications submitted</p></div>
+  ${apps.length===0?`<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">No applications yet. Browse schemes and apply!</div>`:apps.map(s=>`<div class="app-card"><div><div style="font-weight:700;font-size:13px">${escHtml(s.name)}</div><div style="font-size:11px;color:var(--muted);margin-top:3px">${s.ministry||""}</div></div><div style="display:flex;align-items:center;gap:10px"><span class="status-badge" style="background:#10B98115;color:#10B981;border:1px solid #10B98133">✅ Applied</span><a href="${s.applyUrl||"#"}" target="_blank" style="font-size:11px;color:var(--accent)">Official Site ↗</a></div></div>`).join("")}`;
+}
+
+function renderHotspotsTab(tab){
+  const severity = state.hotspotSeverity || "all";
+  const status = state.hotspotStatus || "all";
+  const filtered = STATE_HOTSPOTS
+    .filter(item => severity === "all" || item.severity === severity)
+    .filter(item => status === "all" || item.status === status)
+    .sort((a,b)=>b.complaints-a.complaints);
+
+  tab.innerHTML = `
+    <div style="margin-bottom:20px">
+      <h3 style="font-size:16px;font-weight:800;margin-bottom:4px">State Grievance Hotspots</h3>
+      <p style="font-size:12px;color:var(--muted)">States with the highest complaint volume, unresolved grievances, and active delivery stress, shown directly in the citizen dashboard.</p>
+    </div>
+    <div class="hotspot-toolbar">
+      <div class="hotspot-filters">
+        <select class="hotspot-select" onchange="setHotspotSeverity(this.value)">
+          <option value="all"${severity==="all"?" selected":""}>All Severity</option>
+          <option value="critical"${severity==="critical"?" selected":""}>Critical</option>
+          <option value="high"${severity==="high"?" selected":""}>High</option>
+          <option value="moderate"${severity==="moderate"?" selected":""}>Moderate</option>
+        </select>
+        <select class="hotspot-select" onchange="setHotspotStatus(this.value)">
+          <option value="all"${status==="all"?" selected":""}>All Status</option>
+          <option value="open"${status==="open"?" selected":""}>Open</option>
+          <option value="in_progress"${status==="in_progress"?" selected":""}>In Progress</option>
+          <option value="resolved"${status==="resolved"?" selected":""}>Resolved</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${makePill(filtered.length + " states shown", "#0EA5E9")}
+        ${makePill(filtered.reduce((sum, item) => sum + item.complaints, 0).toLocaleString("en-IN") + " complaints", "#EF4444")}
+      </div>
+    </div>
+    <div class="hotspot-list">
+      ${filtered.length ? filtered.map((item, idx) => `
+        <div class="hotspot-row">
+          <div class="hotspot-rank">${idx + 1}</div>
+          <div>
+            <div style="font-size:16px;font-weight:800">${item.state}</div>
+            <div class="hotspot-meta">${item.unresolved} unresolved · ${escHtml(item.officer)} · ${escHtml(item.zone)}</div>
+          </div>
+          <div>
+            <div class="hotspot-count" style="color:${item.severity==="critical"?"#EF4444":item.severity==="high"?"#F59E0B":"#0EA5E9"}">${item.complaints}</div>
+            <div class="hotspot-label">total complaints</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+            ${makePill(item.status.replace("_"," "), item.status==="resolved"?"#10B981":item.status==="in_progress"?"#F59E0B":"#EF4444")}
+            <div style="font-size:11px;color:var(--muted);max-width:220px;text-align:right;">${escHtml(item.topIssue)}</div>
+          </div>
+        </div>
+      `).join("") : `<div class="hotspot-empty">No states match the selected filters right now.</div>`}
+    </div>
+  `;
+}
+
+function renderGrievanceTab(tab){
+  tab.innerHTML=`<div style="margin-bottom:20px"><h3 style="font-size:16px;font-weight:800;margin-bottom:4px">File a Grievance</h3><p style="font-size:12px;color:var(--muted)">Our AI classifies your complaint and routes it to the right department instantly.</p></div>
+  <div class="griev-form">
+    <label class="field-label">Describe Your Issue</label>
+    <textarea class="std-input" id="griev-text" rows="4" placeholder="Example: My PM Kisan application was rejected without any reason..." style="resize:vertical;margin-bottom:10px"></textarea>
+    <label class="field-label">Your Location</label>
+    <input class="std-input" id="griev-loc" value="${escHtml(state.profile.location||"Karnataka")}" style="margin-bottom:14px" />
+    <button onclick="submitGrievance()" style="background:linear-gradient(135deg,#EF4444,#F59E0B);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:12px;font-weight:700;letter-spacing:0.5px">📣 CLASSIFY & SUBMIT</button>
+  </div>
+  <div id="griev-result-area"></div><div id="griev-history"></div>`;
+  renderGrievanceHistory();
+}
+
+async function submitGrievance(){
+  const text=document.getElementById("griev-text").value.trim(); const loc=document.getElementById("griev-loc").value.trim()||"Unknown";
+  if(text.length<10){alert("Please describe your issue in more detail.");return;}
+  const resultArea=document.getElementById("griev-result-area");
+  resultArea.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted)"><div class="spinner" style="margin:0 auto 10px"></div>Classifying...</div>`;
+  const classification=classifyGrievanceLocal(text);
+  const sevColor={10:"#EF4444",9:"#EF4444",8:"#F59E0B",7:"#F59E0B",6:"#F59E0B",5:"#F59E0B"}[classification.priority]||"#10B981";
+  resultArea.innerHTML=`<div class="griev-result"><div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:12px">AI CLASSIFICATION RESULT</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Category</div><div style="font-size:14px;font-weight:800;margin-top:3px;text-transform:capitalize">${(classification.category||"other").replace("_"," ")}</div></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Priority</div><div style="font-size:14px;font-weight:800;margin-top:3px;color:${sevColor}">${classification.priority}/10</div></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Route To</div><div style="font-size:12px;font-weight:700;margin-top:3px">${classification.route_to||"Grievance Cell"}</div></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Escalate</div><div style="font-size:12px;font-weight:700;margin-top:3px;color:${classification.escalate?"#EF4444":"#10B981"}">${classification.escalate?"⚡ YES — URGENT":"✓ Normal queue"}</div></div>
+  </div>
+  <button onclick="saveGrievance('${escHtml(text.replace(/'/g,"\\'"))}','${escHtml(loc)}','${classification.category||"other"}')" style="margin-top:12px;background:linear-gradient(135deg,var(--accent),#6366F1);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:11px;font-weight:700">✅ CONFIRM & SUBMIT</button>
+  </div>`;
+}
+
+function classifyGrievanceLocal(text){
+  const t=text.toLowerCase(); let cat="other",priority=1;
+  if(t.includes("bribe")||t.includes("corrupt")){cat="corruption";priority=8;}
+  else if(t.includes("delay")||t.includes("wait")||t.includes("not received")){cat="delay";priority=5;}
+  else if(t.includes("reject")||t.includes("unfair")){cat="wrong_rejection";priority=6;}
+  else if(t.includes("portal")||t.includes("website")||t.includes("error")){cat="portal_technical";priority=4;}
+  const routing={corruption:"Vigilance / Anti-Corruption Cell",delay:"Finance Department",wrong_rejection:"District Collectorate",portal_technical:"NIC / IT Support",other:"Grievance Cell"};
+  return{category:cat,priority,route_to:routing[cat],escalate:priority>=5};
+}
+
+function saveGrievance(text,location,category){
+  const grievances=JSON.parse(localStorage.getItem('npide_grievances')||'[]');
+  grievances.push({id:Date.now(),text,location,category,filed_on:new Date().toLocaleDateString(),status:"submitted",citizen:state.currentUser.name});
+  localStorage.setItem('npide_grievances',JSON.stringify(grievances));
+  document.getElementById("griev-result-area").innerHTML=`<div style="background:#10B98115;border:1px solid #10B98133;border-radius:10px;padding:16px 20px;color:#10B981;font-weight:700;margin-bottom:16px">✅ Grievance submitted! Ref: GRV-${Date.now().toString(36).toUpperCase()}</div>`;
+  renderGrievanceHistory();
+}
+function renderGrievanceHistory(){
+  const histEl=document.getElementById("griev-history"); if(!histEl)return;
+  const all=JSON.parse(localStorage.getItem('npide_grievances')||'[]');
+  const mine=all.filter(g=>g.citizen===state.currentUser.name);
+  if(!mine.length)return;
+  histEl.innerHTML=`<div style="margin-top:24px"><div class="section-title">YOUR PAST GRIEVANCES</div>${mine.map(g=>`<div class="app-card"><div><div style="font-size:12px;font-weight:700;text-transform:capitalize">${g.category.replace("_"," ")}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${g.text.slice(0,60)}... · ${g.filed_on}</div></div>${makePill(g.status,"#10B981")}</div>`).join("")}</div>`;
+}
+
+function renderCatFilter(matched,primaryCat){
+  const el=document.getElementById("cat-filter"); if(!el)return;
+  el.innerHTML=["all","student","farmer","labour","business","health","general"].map(c=>`<button class="cat-btn${state.currentFilter===c?" active":""}" onclick="setFilter('${c}')">${catLabel[c]}</button>`).join("");
+}
+function setFilter(f){
+  state.currentFilter=f;
+  document.querySelectorAll(".cat-btn").forEach(b=>{ b.classList.toggle("active",b.textContent===catLabel[f]); });
+  renderSchemeGrid(window._matched,window._primaryCat);
+}
+function setHotspotSeverity(value){
+  state.hotspotSeverity = value;
+  renderHotspotsTab(document.getElementById("ud-tab-content"));
+}
+function setHotspotStatus(value){
+  state.hotspotStatus = value;
+  renderHotspotsTab(document.getElementById("ud-tab-content"));
+}
+function renderSchemeGrid(matched,primaryCat){
+  const el=document.getElementById("scheme-grid"); if(!el)return;
+  const filtered=state.currentFilter==="all"?matched:matched.filter(s=>s.category===state.currentFilter);
+  el.innerHTML=filtered.map(s=>{
+    const isH=s.category===primaryCat; const isA=state.appliedSchemes.includes(s.id); const isExtra=s.id>100;
+    return`<div class="scheme-card${isH?" highlight":""}">
+      ${isH?'<div class="star-badge">FOR YOU ⭐</div>':""}${isExtra?'<div class="ai-badge">AI ADDED</div>':""}
+      <div style="font-size:10px;font-weight:800;letter-spacing:1px;color:${isH?"var(--accent)":"var(--muted)"};text-transform:uppercase;margin-bottom:6px">${s.category}</div>
+      <div style="font-size:13px;font-weight:700;line-height:1.35;margin-bottom:6px">${escHtml(s.name)}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">${escHtml(s.desc||"")}</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:4px">✓ ${escHtml(s.eligibility||"")}</div>
+      <div style="font-size:12px;font-weight:800;color:var(--green)">${s.benefit?`₹${Number(s.benefit).toLocaleString("en-IN")}/year`:"Non-monetary benefit"}</div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        ${isA?`<div style="font-size:11px;color:var(--green);font-weight:700">✅ Applied</div>`:`<button class="apply-btn" onclick="applyScheme(${s.id},'${escHtml(s.applyUrl||"")}')">Apply Now →</button>`}
+        <button class="details-btn" onclick="showSchemeModal(${s.id})">Details</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function applyScheme(id,url){
+  if(!state.appliedSchemes.includes(id))state.appliedSchemes.push(id);
+  saveSession();
+  if(url&&url!=="undefined")window.open(url,"_blank");
+  renderSchemesTab(document.getElementById("ud-tab-content"));
+}
+
+function showSchemeModal(id){
+  const s=getAllSchemes().find(x=>x.id===id); if(!s)return;
+  const isA=state.appliedSchemes.includes(s.id);
+  document.getElementById("modal-header").innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:${catColor[s.category]||"#64748B"}">${s.category}</span><button class="close-btn" onclick="closeSchemeModal()">✕</button></div><h2 style="font-size:17px;font-weight:800;line-height:1.35;margin-bottom:6px">${escHtml(s.name)}</h2><p style="font-size:12px;color:var(--muted);margin-bottom:16px">${escHtml(s.desc||"")}</p><div style="display:flex;gap:12px;padding:14px 0;flex-wrap:wrap;border-top:1px solid var(--border)">${[{label:"Annual Benefit",value:s.benefit?`₹${Number(s.benefit).toLocaleString("en-IN")}`:"Non-monetary",color:"#10B981"},{label:"Launched",value:s.launchedYear||"—",color:"#0EA5E9"},{label:"Coverage",value:s.location==="All"?"Pan India":s.location,color:"#F59E0B"}].map(x=>`<div style="background:${x.color}15;border:1px solid ${x.color}33;border-radius:8px;padding:8px 14px;flex:1;min-width:100px"><div style="font-size:9px;font-weight:800;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">${x.label}</div><div style="font-size:14px;font-weight:800;color:${x.color}">${x.value}</div></div>`).join("")}</div>`;
+  document.getElementById("modal-body").innerHTML=`<div class="modal-section"><div class="modal-section-title">📋 ABOUT THIS SCHEME</div><p style="font-size:13px;line-height:1.7;margin:0">${escHtml(s.details||s.desc||"")}</p></div><div class="modal-section"><div class="modal-section-title">✅ ELIGIBILITY</div><div style="background:#10B98111;border:1px solid #10B98133;border-radius:8px;padding:12px 16px"><p style="font-size:13px;margin:0;line-height:1.6">✓ ${escHtml(s.eligibility||"")}</p></div></div>${s.documents?`<div class="modal-section"><div class="modal-section-title">📁 DOCUMENTS REQUIRED</div><div style="display:flex;flex-direction:column;gap:6px">${s.documents.map((d,i)=>`<div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 12px"><span style="color:var(--accent);font-size:12px;font-weight:800">${i+1}.</span><span style="font-size:12px">${escHtml(d)}</span></div>`).join("")}</div></div>`:""}<div style="display:flex;gap:10px;padding-top:4px">${isA?`<div style="flex:1;text-align:center;padding:12px;background:#10B98115;border:1px solid #10B98144;border-radius:8px;font-size:13px;font-weight:700;color:var(--green)">✅ You have applied</div>`:`<button style="flex:1;padding:12px;font-size:13px" class="apply-btn" onclick="applyScheme(${s.id},'${s.applyUrl||""}');closeSchemeModal()">🚀 Apply Now</button>`}<button class="details-btn" style="padding:12px 20px" onclick="closeSchemeModal()">Close</button></div>`;
+  document.getElementById("scheme-modal").classList.remove("hidden");
+}
+function closeSchemeModal(){ document.getElementById("scheme-modal").classList.add("hidden"); }
+
+/* ═══ ADMIN ═══ */
+const mockGrievances=[{id:1,location:"Karnataka",category:"wrong rejection",status:"open",severity:"high",count:4},{id:2,location:"Bihar",category:"delay",status:"in_progress",severity:"high",count:3},{id:3,location:"Karnataka",category:"no awareness",status:"resolved",severity:"low",count:5},{id:4,location:"Kerala",category:"corruption",status:"open",severity:"high",count:2}];
+
+function seededPredictionRandom(seed, low, high){
+  const val = Math.sin(seed) * 43758.5453123;
+  const frac = val - Math.floor(val);
+  return low + frac * (high - low);
+}
+function generatePredictionHistory(district, districtIdx){
+  const history = [];
+  for(let month=0; month<6; month++){
+    const seed = districtIdx * 100 + month * 7;
+    const expected = Math.floor(seededPredictionRandom(seed + 1, 5000, 25000));
+    const noise = seededPredictionRandom(seed + 2, 0.55, 1.0);
+    const actual = Math.floor(expected * noise);
+    history.push({month:month+1, expected, actual, population:district.population, schemes:district.schemes});
+  }
+  return history;
+}
+function engineerPredictionFeatures(history){
+  const gaps = history.map(h => (h.expected - h.actual) / h.expected);
+  const gapRatio = gaps.reduce((a,b)=>a+b,0) / gaps.length;
+  const coverageRate = history.reduce((sum,h)=>sum + (h.actual / h.population * 1000),0) / history.length;
+  const schemeDensity = history[0].schemes / (history[0].population / 1000000);
+  const trend = gaps[gaps.length-1] - gaps[0];
+  return {
+    gap_ratio: Number(gapRatio.toFixed(4)),
+    coverage_rate: Number(coverageRate.toFixed(4)),
+    scheme_density: Number(schemeDensity.toFixed(4)),
+    trend: Number(trend.toFixed(4))
+  };
+}
+function createPredictionLabel(features){
+  let score = 0;
+  if(features.gap_ratio > 0.30) score += 1;
+  if(features.coverage_rate < 5.0) score += 1;
+  if(features.scheme_density < 10.0) score += 1;
+  if(features.trend > 0.05) score += 1;
+  return score >= 2 ? 1 : 0;
+}
+function calculateFailureProbability(features, label){
+  const raw = (
+    (features.gap_ratio * 2.3) +
+    ((5 - Math.min(features.coverage_rate, 5)) * 0.12) +
+    ((10 - Math.min(features.scheme_density, 10)) * 0.055) +
+    (Math.max(features.trend, -0.2) * 1.5) +
+    (label ? 0.55 : 0.05)
+  );
+  const probability = 1 / (1 + Math.exp(-(raw - 1.05)));
+  return Number(Math.max(0.05, Math.min(0.98, probability)).toFixed(4));
+}
+function getFailurePredictionResults(){
+  return FAILURE_PREDICTION_DISTRICTS.map((district, idx) => {
+    const history = generatePredictionHistory(district, idx + 1);
+    const features = engineerPredictionFeatures(history);
+    const label = createPredictionLabel(features);
+    const failureProbability = calculateFailureProbability(features, label);
+    const riskLevel = failureProbability >= 0.7 ? "HIGH" : (failureProbability >= 0.4 ? "MEDIUM" : "LOW");
+    return {
+      district: district.name,
+      failure_probability: failureProbability,
+      risk_level: riskLevel,
+      gap_ratio: features.gap_ratio,
+      coverage_rate: features.coverage_rate,
+      scheme_density: features.scheme_density,
+      trend: features.trend > 0 ? "worsening" : "improving"
+    };
+  }).sort((a,b)=>b.failure_probability-a.failure_probability);
+}
+function renderFailurePrediction(){
+  const predictions = getFailurePredictionResults();
+  const highRisk = predictions.filter(p => p.failure_probability > 0.7);
+  const mediumRisk = predictions.filter(p => p.risk_level === "MEDIUM");
+  const avgProbability = predictions.reduce((sum,p)=>sum+p.failure_probability,0) / predictions.length;
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+      <div>
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">District Welfare Scheme Failure Prediction</h2>
+        <p style="color:var(--muted);font-size:13px">Synthetic 6-month district model inspired by your Gradient Boosting pipeline, exposed directly in the administrator dashboard.</p>
+      </div>
+      ${makePill("Admin AI Monitor", "#A78BFA")}
+    </div>
+    <div class="prediction-grid">
+      <div class="stat-card" style="border-color:#EF444444"><div class="stat-num" style="color:#EF4444">${highRisk.length}</div><div class="stat-label">High Risk Districts</div></div>
+      <div class="stat-card" style="border-color:#F59E0B44"><div class="stat-num" style="color:#F59E0B">${mediumRisk.length}</div><div class="stat-label">Medium Risk Districts</div></div>
+      <div class="stat-card" style="border-color:#0EA5E944"><div class="stat-num" style="color:#0EA5E9">${Math.round(avgProbability * 100)}%</div><div class="stat-label">Average Failure Risk</div></div>
+      <div class="stat-card" style="border-color:#10B98144"><div class="stat-num" style="color:#10B981">${predictions.length}</div><div class="stat-label">Districts Modeled</div></div>
+    </div>
+    ${highRisk.length ? `
+      <div class="prediction-alert">
+        <div style="font-size:12px;font-weight:800;letter-spacing:1px;color:#FCA5A5;margin-bottom:8px;">ALERT AGENT SUMMARY</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--text)">
+          ${highRisk[0].district} needs emergency attention first because it combines a ${(highRisk[0].failure_probability*100).toFixed(0)}% failure probability,
+          gap ratio of ${highRisk[0].gap_ratio.toFixed(2)}, coverage rate of ${highRisk[0].coverage_rate.toFixed(2)}, and a ${highRisk[0].trend} trend.
+          Prioritize field verification, beneficiary audit, and scheme delivery escalation within 7 days.
+        </div>
+      </div>
+    ` : ""}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:22px;">
+      ${highRisk.slice(0,3).map(p => `
+        <div class="prediction-card" style="border-color:${p.risk_level==="HIGH"?"#EF444444":"#F59E0B44"}">
+          <div class="prediction-title">Intervention Priority</div>
+          <div class="prediction-district">${p.district}</div>
+          <div class="prediction-meta">
+            Failure probability: ${(p.failure_probability*100).toFixed(0)}%<br/>
+            Gap ratio: ${p.gap_ratio.toFixed(2)} · Coverage: ${p.coverage_rate.toFixed(2)}<br/>
+            Action: launch district audit, verify beneficiary backlog, review scheme density allocation.
+          </div>
+          <div class="prediction-bar"><div class="prediction-bar-fill" style="width:${(p.failure_probability*100).toFixed(0)}%;background:${p.risk_level==="HIGH"?"#EF4444":"#F59E0B"}"></div></div>
+        </div>
+      `).join("")}
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>District</th>
+            <th>Fail Prob</th>
+            <th>Risk</th>
+            <th>Gap Ratio</th>
+            <th>Coverage</th>
+            <th>Scheme Density</th>
+            <th>Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${predictions.map(p => `
+            <tr>
+              <td><strong>${p.district}</strong></td>
+              <td style="font-weight:800;color:${p.risk_level==="HIGH"?"#EF4444":p.risk_level==="MEDIUM"?"#F59E0B":"#10B981"}">${(p.failure_probability*100).toFixed(0)}%</td>
+              <td>${makePill(p.risk_level, p.risk_level==="HIGH"?"#EF4444":p.risk_level==="MEDIUM"?"#F59E0B":"#10B981")}</td>
+              <td>${p.gap_ratio.toFixed(2)}</td>
+              <td>${p.coverage_rate.toFixed(2)}</td>
+              <td>${p.scheme_density.toFixed(2)}</td>
+              <td>${makePill(p.trend, p.trend==="worsening" ? "#EF4444" : "#10B981")}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function setAdminSection(sec){
+  state.adminSection=sec;
+  document.querySelectorAll(".side-item").forEach(el=>{ el.classList.remove("active"); const oc=el.getAttribute("onclick")||""; if(oc.includes(`'${sec}'`))el.classList.add("active"); });
+  renderAdminSection(sec);
+}
+function renderAdminSection(sec){
+  const allSchemes=getAllSchemes(); const allGriev=JSON.parse(localStorage.getItem('npide_grievances')||'[]');
+  document.getElementById("sidebar-stats").innerHTML=[{label:"Active Schemes",val:allSchemes.length,color:"var(--accent)"},{label:"Grievances Filed",val:allGriev.length+mockGrievances.length,color:"var(--red)"},{label:"PE Schemes",val:getPESchemes().filter(s=>s.active).length,color:"var(--amber)"}].map(s=>`<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:10px;color:var(--muted)">${s.label}</span><span style="font-size:13px;font-weight:800;color:${s.color}">${s.val}</span></div>`).join("");
+  updateApiStatus();
+  const main=document.getElementById("admin-main");
+  if(sec==="overview")main.innerHTML=renderOverview();
+  else if(sec==="schemes")main.innerHTML=renderManageSchemes();
+  else if(sec==="gaps")main.innerHTML=renderGaps();
+  else if(sec==="grievances")main.innerHTML=renderGrievances();
+  else if(sec==="prediction")main.innerHTML=renderFailurePrediction();
+  else if(sec==="policy"){main.innerHTML=`<div id="pe-mount"></div>`;renderPolicyEngine();}
+}
+
+function renderOverview(){
+  const allSchemes=getAllSchemes(),allGriev=JSON.parse(localStorage.getItem('npide_grievances')||'[]');
+  return`<h2 style="font-size:20px;font-weight:800;margin-bottom:4px">Government Dashboard</h2><p style="color:var(--muted);font-size:13px;margin-bottom:24px">Real-time policy intelligence overview</p>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px">${[{num:allSchemes.length,label:"Total Schemes",color:"#0EA5E9"},{num:"—",label:"Citizens Registered",color:"#10B981"},{num:getPESchemes().filter(s=>s.active).length+" active",label:"PE Schemes",color:"#F59E0B"},{num:allGriev.length,label:"Grievances Filed",color:"#EF4444"}].map(s=>`<div class="stat-card" style="border-color:${s.color}44"><div class="stat-num" style="color:${s.color}">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join("")}</div>
+  <div onclick="setAdminSection('policy')" style="background:linear-gradient(135deg,#0C4A6E,#1a1030);border:1px solid #F59E0B44;border-radius:12px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;cursor:pointer"><span style="font-size:28px">⚙️</span><div style="flex:1"><div style="font-size:13px;font-weight:800;color:#F59E0B">POLICY ENGINE — SCHEME MANAGEMENT</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Add, edit, remove schemes with SQL preview.</div></div><div style="background:#F59E0B;color:var(--bg);border-radius:6px;padding:8px 14px;font-size:11px;font-weight:800">OPEN →</div></div>
+  <div class="section-title">RECENT GRIEVANCES</div><div class="table-wrap"><table><thead><tr>${["Location","Category","Count","Status","Severity"].map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${[...mockGrievances,...JSON.parse(localStorage.getItem('npide_grievances')||'[]').slice(-4).map(g=>({location:g.location,category:g.category.replace("_"," "),status:g.status,severity:"medium",count:1}))].map(g=>`<tr><td><strong>${g.location}</strong></td><td>${g.category}</td><td style="font-weight:800;color:var(--accent)">${g.count}</td><td>${makePill(g.status.replace("_"," "),{open:"#EF4444",in_progress:"#F59E0B",resolved:"#10B981",submitted:"#10B981"}[g.status]||"#64748B")}</td><td>${makePill(g.severity||"medium",{high:"#EF4444",medium:"#F59E0B",low:"#10B981"}[g.severity||"medium"])}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+function renderManageSchemes(){
+  const all=getAllSchemes();
+  return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="font-size:20px;font-weight:800;margin:0">Manage Schemes</h2><button style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:11px;font-weight:700" onclick="setAdminSection('policy')">⚙️ Policy Engine</button></div>
+  <div class="table-wrap"><table><thead><tr>${["Scheme","Category","Benefit","Location","Source"].map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${all.map(s=>`<tr><td><div style="font-weight:700;font-size:12px">${escHtml(s.name)}</div></td><td>${makePill(s.category,"#0EA5E9")}</td><td style="color:var(--green);font-weight:700">${s.benefit?`₹${Number(s.benefit).toLocaleString("en-IN")}`:"—"}</td><td>${s.location}</td><td>${s.id>100?makePill("AI Added","#A78BFA"):makePill("Base","#64748B")}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+function renderGaps(){
+  const all=getAllSchemes();
+  return`<h2 style="font-size:20px;font-weight:800;margin-bottom:20px">Gap Detection Report</h2>${all.slice(0,8).map(s=>{const eligible=Math.floor(Math.random()*20)+5;const applied=Math.floor(eligible*(0.2+Math.random()*0.5));const pct=Math.round(applied/eligible*100);const gap=eligible-applied;const gc=gap>5?"#EF4444":gap>2?"#F59E0B":"#10B981";const bc=pct<40?"#EF4444":pct<70?"#F59E0B":"#10B981";return`<div class="profile-card" style="flex-direction:column;align-items:stretch;margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:700;font-size:13px">${escHtml(s.name)}</div>${makePill(gap+" missed",gc)}</div><div style="background:var(--dim);border-radius:20px;height:8px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${bc};border-radius:20px"></div></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--muted)"><span>${applied} applied / ${eligible} eligible</span><span style="font-weight:700;color:${bc}">${pct}% efficiency</span></div></div>`;}).join("")}`;
+}
+
+function renderGrievances(){
+  const stC={open:"#EF4444",in_progress:"#F59E0B",resolved:"#10B981",submitted:"#10B981"};
+  const stored=JSON.parse(localStorage.getItem('npide_grievances')||'[]');
+  const all=[...mockGrievances,...stored.map(g=>({id:g.id,location:g.location,category:g.category.replace("_"," "),status:g.status,severity:"medium",count:1,citizen:g.citizen}))];
+  return`<h2 style="font-size:20px;font-weight:800;margin-bottom:20px">Grievance Hotspots</h2><div class="table-wrap"><table><thead><tr>${["Location","Category","Count","Status","Severity","Filed By"].map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${all.map(g=>`<tr><td><strong>${g.location}</strong></td><td>${g.category}</td><td style="font-weight:800;color:var(--accent)">${g.count}</td><td>${makePill((g.status||"open").replace("_"," "),stC[g.status]||"#64748B")}</td><td>${makePill(g.severity||"medium",{high:"#EF4444",medium:"#F59E0B",low:"#10B981"}[g.severity||"medium"])}</td><td style="color:var(--muted);font-size:10px">${g.citizen||"System"}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+/* ═══ POLICY ENGINE ═══ */
+function renderPolicyEngine(){
+  const mount=document.getElementById("pe-mount"); if(!mount)return;
+  const peS=getPESchemes();
+  mount.innerHTML=`<div class="pe-wrap"><div class="pe-inner-header"><div><div style="display:flex;align-items:center;gap:10px"><span style="background:#3B82F6;color:#fff;font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 8px;border-radius:3px;font-family:'DM Mono',monospace">POLICY ENGINE</span><span style="font-size:15px;font-weight:700;letter-spacing:1px;font-family:'DM Mono',monospace">SCHEME MANAGEMENT SYSTEM</span></div><p style="font-size:11px;color:#64748B;margin:3px 0 0;font-family:'DM Mono',monospace">DATABASE & RULES MODULE · ADMIN ONLY</p></div><div style="text-align:right"><div id="pe-active-count" style="font-size:22px;font-weight:700;color:#60A5FA;font-family:'DM Mono',monospace">${peS.filter(s=>s.active).length}</div><div style="font-size:10px;color:#64748B;letter-spacing:1px;font-family:'DM Mono',monospace">ACTIVE SCHEMES</div></div></div>
+  <div class="pe-tabs">${["📄 PDF → AI → DB","✏️ Edit Scheme","🗑 Remove Scheme","➕ Add Manual"].map((t,i)=>`<button class="pe-tab${state.peTab===i?" active":""}" onclick="setPETab(${i})">${t}</button>`).join("")}</div>
+  <div class="pe-body" id="pe-body"></div></div>`;
+  renderPETab();
+}
+
+function setPETab(i){ state.peTab=i; document.querySelectorAll(".pe-tab").forEach((b,j)=>b.classList.toggle("active",i===j)); renderPETab(); }
+function renderPETab(){ const body=document.getElementById("pe-body"); if(!body)return; if(state.peTab===0)body.innerHTML=renderPEPdf(); else if(state.peTab===1)body.innerHTML=renderPEEdit(); else if(state.peTab===2)body.innerHTML=renderPERemove(); else if(state.peTab===3)body.innerHTML=renderPEManual(); }
+
+function renderPEPdf(){
+  const logHtml=state.peLogs.length?`<div class="pe-card" style="padding:16px;margin-top:16px"><div class="pe-label" style="margin-bottom:10px">PROCESSING LOG</div><div class="pe-log">${state.peLogs.map(l=>`<div style="color:${l.color}"><span style="color:#1E2740">[${l.t}]</span> ${l.msg}</div>`).join("")}${state.peLoading?'<div style="color:#F59E0B">⏳ AI processing...</div>':""}</div></div>`:"";
+  const extractHtml=state.peExtracted?`<div class="pe-card"><div class="pe-label" style="color:#22C55E;margin-bottom:16px">✅ EXTRACTED — REVIEW & CONFIRM</div><div class="pe-row"><div><label class="pe-label">Scheme Name *</label><input class="pe-input" value="${escHtml(state.peExtracted.name||"")}" oninput="peExtractChange('name',this.value)" /></div><div><label class="pe-label">Benefit (₹/year)</label><input class="pe-input" type="number" value="${state.peExtracted.benefit||""}" oninput="peExtractChange('benefit',+this.value||null)" /></div></div><div class="pe-label" style="margin-top:8px">GENERATED SQL</div><div class="sql-box">${escHtml(schemeToSQL(state.peExtracted))}</div><div class="flex-gap" style="margin-top:16px"><button class="pe-btn" style="background:#22C55E;color:#fff;border-color:#22C55E" onclick="peConfirmAdd()">✅ CONFIRM & SAVE</button><button class="pe-btn" style="background:transparent;color:#EF4444;border-color:#EF4444" onclick="peDiscardExtract()">✕ DISCARD</button></div></div>`:"";
+  return`${makePEChip("FEATURE 1","#3B82F6")}<span style="margin-left:10px;font-size:13px;font-weight:700"> PDF → GEMINI AI → DATABASE</span><p style="font-size:12px;color:#64748B;margin:6px 0 20px">Upload a government policy PDF. AI extracts all scheme parameters automatically.</p>
+  <div class="drop-zone" id="pe-drop-zone" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="peDrop(event)" onclick="document.getElementById('pe-file-input').click()"><div style="font-size:32px;margin-bottom:8px">📄</div><div style="font-size:13px;font-weight:700;margin-bottom:4px">${state.peFile||"Drop policy PDF here or click to upload"}</div><div style="font-size:11px;color:#64748B">Supports .pdf, .txt</div><input type="file" id="pe-file-input" accept=".pdf,.txt" style="display:none" onchange="peFileSelect(this)" /></div>
+  ${logHtml}${extractHtml}`;
+}
+
+function peDrop(e){e.preventDefault();document.getElementById("pe-drop-zone").classList.remove("dragging");const f=e.dataTransfer.files[0];if(f)peProcessFile(f);}
+function peFileSelect(inp){const f=inp.files[0];if(f)peProcessFile(f);}
+function peAddLog(msg,color="#64748B"){state.peLogs.push({msg,color,t:new Date().toLocaleTimeString()});}
+function peExtractChange(key,val){if(state.peExtracted)state.peExtracted[key]=val;}
+
+async function peProcessFile(f){
+  state.peFile=f.name; state.peExtracted=null; state.peLoading=true; state.peLogs=[];
+  peAddLog(`📄 File: ${f.name} (${(f.size/1024).toFixed(1)} KB)`,"#60A5FA"); renderPETab();
+
+  // ── Step 1: Prompt for API key BEFORE async file reading so browser allows it ──
+  let KEY=localStorage.getItem("gemini_api_key");
+  if(!KEY){
+    KEY=prompt("Enter your Google Gemini API Key (stored locally):");
+    if(!KEY){peAddLog("❌ API Key required","#EF4444");state.peLoading=false;renderPETab();return;}
+    localStorage.setItem("gemini_api_key",KEY.trim());
+  }
+
+  // ── Step 2: Read file correctly — base64 for PDF, text for .txt ──
+  const isPdf=f.name.toLowerCase().endsWith(".pdf")||f.type==="application/pdf";
+  const reader=new FileReader();
+
+  reader.onload=async(e)=>{
+    peAddLog("🤖 Sending to Gemini AI...","#F59E0B"); renderPETab();
+    try{
+      let requestBody;
+      if(isPdf){
+        // Send PDF as inline base64 data — Gemini can natively read PDFs
+        const base64Data=e.target.result.split(",")[1];
+        requestBody={contents:[{parts:[
+          {inline_data:{mime_type:"application/pdf",data:base64Data}},
+          {text:`Extract scheme details from this Indian government policy PDF. Return ONLY a JSON object (no markdown, no explanation):\n{"name":"","description":"","min_income":0,"max_income":500000,"gender":"All","location":"All","occupation":"All","min_age":0,"max_age":120,"benefit":null}`}
+        ]}]};
+      } else {
+        // Plain text — truncate to 4000 chars for safety
+        const rawText=e.target.result;
+        requestBody={contents:[{parts:[{text:`Extract scheme details from this Indian government policy document. Return ONLY a JSON object (no markdown, no explanation):\n{"name":"","description":"","min_income":0,"max_income":500000,"gender":"All","location":"All","occupation":"All","min_age":0,"max_age":120,"benefit":null}\n\nDocument:\n${rawText.slice(0,4000)}`}]}]};
+      }
+
+      const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${KEY.trim()}`,
+        {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(requestBody)});
+      const data=await resp.json();
+      if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
+      const raw=((data.candidates||[])[0]?.content?.parts?.[0]?.text||"").trim();
+      if(!raw)throw new Error("Empty response from Gemini. Check your API key permissions.");
+      let parsed;
+      try{parsed=JSON.parse(raw.replace(/```json|```/g,"").trim());}
+      catch{const m=raw.match(/\{[\s\S]*?\}/);parsed=m?JSON.parse(m[0]):null;}
+      if(parsed&&parsed.name){peAddLog(`✅ Scheme: "${parsed.name}"`,"#22C55E");state.peExtracted=parsed;}
+      else{peAddLog("⚠️ Could not parse AI response. Raw: "+raw.slice(0,120),"#EF4444");}
+    }catch(err){
+      peAddLog("❌ "+err.message,"#EF4444");
+      // Only clear key if it looks like an auth error
+      if(err.message&&(err.message.includes("API_KEY")||err.message.includes("401")||err.message.includes("403"))){
+        localStorage.removeItem("gemini_api_key");
+        peAddLog("🔑 Invalid key cleared — re-upload to try again.","#F59E0B");
+      }
+    }
+    state.peLoading=false; renderPETab();
+  };
+
+  if(isPdf){reader.readAsDataURL(f);}else{reader.readAsText(f);}
+}
+
+function peConfirmAdd(){
+  if(!state.peExtracted)return;
+  const newId=Date.now(); const cat={Farmer:"farmer",Student:"student","Daily Wage":"labour","Self-employed":"business",Salaried:"general",Homemaker:"general",All:"general"}[state.peExtracted.occupation]||"general";
+  const newScheme={...state.peExtracted,id:newId,active:true,category:cat,tags:[(state.peExtracted.occupation||"all").toLowerCase()],desc:state.peExtracted.description||"",eligibility:`Income < ${toINR(state.peExtracted.max_income)}`,applyUrl:"#",launchedYear:new Date().getFullYear().toString(),documents:["Aadhaar Card","Income Certificate","Bank Passbook"],howToApply:"Visit the official government portal.",deadline:"Ongoing",helpline:"—",ministry:"Government of India",details:state.peExtracted.description||""};
+  state.peSchemes=getPESchemes(); state.peSchemes.push({...state.peExtracted,id:newId,active:true}); savePESchemes(); saveExtraScheme(newScheme);
+  peAddLog("✅ Scheme saved!","#22C55E"); state.peExtracted=null; state.peFile=null; setPETab(1);
+}
+function peDiscardExtract(){state.peExtracted=null;state.peFile=null;renderPETab();}
+
+let peEditId=null,peEditCurrent=null;
+function renderPEEdit(){
+  const active=getPESchemes().filter(s=>s.active);
+  const formHtml=peEditId&&peEditCurrent?`<div class="pe-card" style="margin-top:20px"><div class="pe-label" style="color:#60A5FA;margin-bottom:16px">EDITING: ${escHtml(peEditCurrent.name)}</div><div class="pe-row"><div><label class="pe-label">Min Income (₹)</label><input class="pe-input" type="number" value="${peEditCurrent.min_income||0}" oninput="peUpdateForm('min_income',+this.value)" /></div><div><label class="pe-label">Max Income (₹)</label><input class="pe-input" type="number" value="${peEditCurrent.max_income||500000}" oninput="peUpdateForm('max_income',+this.value)" /></div></div><div class="pe-label" style="margin-top:16px">LIVE SQL PREVIEW</div><div class="sql-box" id="pe-edit-sql">${escHtml(schemeToSQL(peEditCurrent,true,peEditId))}</div><div class="flex-gap" style="margin-top:16px"><button class="pe-btn" style="background:#F59E0B;color:#fff;border-color:#F59E0B" onclick="peSaveEdit()">💾 SAVE CHANGES</button><button class="pe-btn" style="background:transparent;color:#64748B;border-color:#64748B" onclick="peCancelEdit()">CANCEL</button><span id="pe-saved-msg" class="hidden" style="color:#22C55E;font-size:12px;font-weight:700">✅ Saved!</span></div></div>`:"";
+  return`${makePEChip("FEATURE 2","#F59E0B")}<span style="margin-left:10px;font-size:13px;font-weight:700"> EDIT EXISTING SCHEME</span><p style="font-size:12px;color:#64748B;margin:6px 0 20px">Select any scheme to modify its parameters.</p>${active.map(s=>`<div class="pe-scheme-line" style="border-color:${peEditId===s.id?"#60A5FA":"#1E2740"}"><div><div style="font-size:13px;font-weight:700">${escHtml(s.name)}</div><div style="font-size:11px;color:#64748B;margin-top:2px">${toINR(s.min_income)} – ${toINR(s.max_income)}</div></div><button class="pe-btn" style="background:transparent;color:#60A5FA;border-color:#60A5FA" onclick="peSelectEdit(${s.id})">EDIT</button></div>`).join("")}${formHtml}`;
+}
+function peSelectEdit(id){const s=getPESchemes().find(x=>x.id===id);if(!s)return;peEditId=id;peEditCurrent={...s};renderPETab();}
+function peUpdateForm(key,val){if(!peEditCurrent)return;peEditCurrent[key]=val;const sqlEl=document.getElementById("pe-edit-sql");if(sqlEl)sqlEl.textContent=schemeToSQL(peEditCurrent,true,peEditId);}
+function peSaveEdit(){state.peSchemes=getPESchemes().map(s=>s.id===peEditId?{...s,...peEditCurrent}:s);savePESchemes();const msg=document.getElementById("pe-saved-msg");if(msg){msg.classList.remove("hidden");setTimeout(()=>msg.classList.add("hidden"),2500);}}
+function peCancelEdit(){peEditId=null;peEditCurrent=null;renderPETab();}
+
+function renderPERemove(){
+  const active=getPESchemes().filter(s=>s.active); const inactive=getPESchemes().filter(s=>!s.active);
+  return`${makePEChip("FEATURE 3","#EF4444")}<span style="margin-left:10px;font-size:13px;font-weight:700"> REMOVE / DEACTIVATE</span><p style="font-size:12px;color:#64748B;margin:6px 0 20px">Soft-delete schemes (is_active = FALSE). Data preserved.</p>
+  ${active.map(s=>`<div class="pe-scheme-line"><div><div style="font-size:13px;font-weight:700">${escHtml(s.name)}</div><div style="font-size:11px;color:#64748B;margin-top:2px">${toINR(s.benefit)} benefit · ${s.occupation||"All"}</div></div><button class="pe-btn" style="background:transparent;color:#EF4444;border-color:#EF4444" onclick="peOpenDeactivate(${s.id})">DEACTIVATE</button></div>`).join("")}
+  ${inactive.length?`<div style="margin-top:24px"><div class="pe-label" style="margin-bottom:10px">DEACTIVATED</div>${inactive.map(s=>`<div class="pe-scheme-line" style="opacity:0.5"><div><div style="font-size:13px;text-decoration:line-through">${escHtml(s.name)}</div></div>${makePEChip("INACTIVE","#64748B")}</div>`).join("")}</div>`:""}`;
+}
+function peOpenDeactivate(id){
+  state.peDeactivateId=id; const s=getPESchemes().find(x=>x.id===id);
+  document.getElementById("pe-confirm-text").innerHTML=`Deactivate <strong style="color:#E2E8F0">${escHtml(s.name)}</strong>. It will no longer appear in eligibility checks.`;
+  document.getElementById("pe-confirm-sql").textContent=`UPDATE schemes\nSET is_active = FALSE\nWHERE scheme_id = ${id};\n-- Data preserved. Reversible.`;
+  document.getElementById("pe-confirm-modal").classList.remove("hidden");
+}
+function confirmDeactivate(){
+  state.peSchemes=getPESchemes().map(s=>s.id===state.peDeactivateId?{...s,active:false}:s); savePESchemes();
+  const extra=JSON.parse(localStorage.getItem('npide_extra_schemes')||'[]');
+  localStorage.setItem('npide_extra_schemes',JSON.stringify(extra.map(s=>s.id===state.peDeactivateId?{...s,active:false}:s)));
+  const countEl=document.getElementById("pe-active-count"); if(countEl)countEl.textContent=state.peSchemes.filter(s=>s.active).length;
+  closePEConfirm(); renderPETab();
+}
+function closePEConfirm(){document.getElementById("pe-confirm-modal").classList.add("hidden");state.peDeactivateId=null;}
+
+let peManualForm={name:"",description:"",min_income:0,max_income:500000,gender:"All",location:"All",occupation:"All",min_age:0,max_age:120,benefit:"",ministry:"",helpline:""};
+function renderPEManual(){
+  return`${makePEChip("FEATURE 4","#A78BFA")}<span style="margin-left:10px;font-size:13px;font-weight:700"> ADD SCHEME MANUALLY</span><p style="font-size:12px;color:#64748B;margin:6px 0 20px">Fill all parameters and save directly to the policy database.</p>
+  <div class="pe-card"><div style="margin-bottom:14px"><label class="pe-label">Scheme Name *</label><input class="pe-input" placeholder="e.g. PM Kisan Samman Nidhi" oninput="peManualChange('name',this.value)" /></div>
+  <div style="margin-bottom:14px"><label class="pe-label">Description</label><input class="pe-input" placeholder="One-line description" oninput="peManualChange('description',this.value)" /></div>
+  <div class="pe-row"><div><label class="pe-label">Min Income (₹)</label><input class="pe-input" type="number" value="0" oninput="peManualChange('min_income',+this.value)" /></div><div><label class="pe-label">Max Income (₹)</label><input class="pe-input" type="number" value="500000" oninput="peManualChange('max_income',+this.value)" /></div></div>
+  <div class="pe-row3"><div><label class="pe-label">Gender</label><select class="pe-select" onchange="peManualChange('gender',this.value)"><option>All</option><option>Male</option><option>Female</option></select></div><div><label class="pe-label">Location</label><input class="pe-input" placeholder="All or State" oninput="peManualChange('location',this.value)" /></div><div><label class="pe-label">Occupation</label><select class="pe-select" onchange="peManualChange('occupation',this.value)"><option>All</option><option>Farmer</option><option>Student</option><option>Daily Wage</option><option>Self-employed</option><option>Salaried</option><option>Homemaker</option></select></div></div>
+  <div class="pe-row"><div><label class="pe-label">Benefit Amount (₹/year)</label><input class="pe-input" type="number" placeholder="Annual benefit" oninput="peManualChange('benefit',+this.value||null)" /></div><div><label class="pe-label">Age Range</label><div style="display:flex;gap:8px"><input class="pe-input" style="width:50%" type="number" placeholder="Min" value="0" oninput="peManualChange('min_age',+this.value)" /><input class="pe-input" style="width:50%" type="number" placeholder="Max" value="120" oninput="peManualChange('max_age',+this.value)" /></div></div></div>
+  <div style="margin-bottom:14px"><label class="pe-label">Ministry</label><input class="pe-input" placeholder="e.g. Ministry of Agriculture" oninput="peManualChange('ministry',this.value)" /></div>
+  <div class="pe-label" style="margin-top:8px">SQL PREVIEW</div><div class="sql-box" id="pm-sql-preview" style="margin-bottom:16px">${escHtml(schemeToSQL(peManualForm))}</div>
+  <div class="flex-gap"><button class="pe-btn" style="background:#A78BFA;color:#fff;border-color:#A78BFA" onclick="peManualSave()">➕ ADD TO DATABASE</button><button class="pe-btn" style="background:transparent;color:#64748B;border-color:#64748B" onclick="peManualReset()">RESET</button><span id="pm-saved" class="hidden" style="color:#22C55E;font-size:12px;font-weight:700">✅ Added!</span></div>
+  </div>`;
+}
+function peManualChange(key,val){peManualForm[key]=val;const p=document.getElementById("pm-sql-preview");if(p)p.textContent=schemeToSQL(peManualForm);}
+function peManualSave(){
+  if(!peManualForm.name.trim()){alert("Scheme name is required.");return;}
+  const newId=Date.now(); state.peSchemes=getPESchemes(); state.peSchemes.push({...peManualForm,id:newId,active:true}); savePESchemes();
+  const cat={Farmer:"farmer",Student:"student","Daily Wage":"labour","Self-employed":"business",Salaried:"general",Homemaker:"general",All:"general"}[peManualForm.occupation]||"general";
+  saveExtraScheme({...peManualForm,id:newId,active:true,category:cat,tags:[peManualForm.occupation.toLowerCase()],desc:peManualForm.description||"",eligibility:`Income < ${toINR(peManualForm.max_income)}`,applyUrl:"#",launchedYear:new Date().getFullYear().toString(),documents:["Aadhaar Card","Income Certificate","Bank Passbook"],howToApply:"Contact the relevant ministry.",deadline:"Ongoing",helpline:peManualForm.helpline||"—",ministry:peManualForm.ministry||"Government of India",details:peManualForm.description||""});
+  const countEl=document.getElementById("pe-active-count");if(countEl)countEl.textContent=state.peSchemes.filter(s=>s.active).length;
+  const msg=document.getElementById("pm-saved");if(msg){msg.classList.remove("hidden");setTimeout(()=>msg.classList.add("hidden"),3000);} peManualReset();
+}
+function peManualReset(){peManualForm={name:"",description:"",min_income:0,max_income:500000,gender:"All",location:"All",occupation:"All",min_age:0,max_age:120,benefit:"",ministry:"",helpline:""};renderPETab();}
+
+checkBackend();
+</script>
+>>>>>>> 69ec2de6fb09d0b17f08616fc3f2fe49d6ea3cc7
 </body>
 
 </html>
