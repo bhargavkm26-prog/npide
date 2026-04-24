@@ -299,19 +299,17 @@ td { padding: 12px 16px; font-size: 12px; border-bottom: 1px solid rgba(26,37,64
       <div id="signup-fields">
         <label class="field-label">Your Full Name</label>
         <input class="std-input" id="signup-name" placeholder="Enter your full name" onkeydown="if(event.key==='Enter')doLogin()" />
-        <label class="field-label">Choose Your User ID</label>
-        <input class="std-input" id="signup-userid" placeholder="e.g. bhargavkumar26" style="font-family:'DM Mono',monospace;letter-spacing:1px" onkeydown="if(event.key==='Enter')doLogin()" />
         <div class="info-note">
-          Create your own <strong>User ID</strong> using 4-24 letters, numbers, `_`, `-`, or `.`. You'll use it to sign in next time.
+          A unique <strong>User ID</strong> will be generated for you. Save it to sign in next time without re-entering your profile.
         </div>
       </div>
 
       <!-- SIGN IN fields -->
       <div id="signin-fields" class="hidden">
         <label class="field-label">Your User ID</label>
-        <input class="std-input" id="signin-userid" placeholder="e.g. bhargavkumar26" style="font-family:'DM Mono',monospace;letter-spacing:1px" onkeydown="if(event.key==='Enter')doLogin()" />
+        <input class="std-input" id="signin-userid" placeholder="e.g. NPIDE-A1B2C3" style="font-family:'DM Mono',monospace;letter-spacing:1px" onkeydown="if(event.key==='Enter')doLogin()" />
         <div class="info-note">
-          Enter the <strong>User ID</strong> you created when you first registered. Your full profile will be restored instantly.
+          Enter the <strong>User ID</strong> you received when you first registered. Your full profile will be restored instantly.
         </div>
       </div>
 
@@ -439,10 +437,27 @@ td { padding: 12px 16px; font-size: 12px; border-bottom: 1px solid rgba(26,37,64
   </div>
 </div>
 
+<!-- ══════════════ USER ID REVEAL MODAL ══════════════ -->
+<div id="userid-modal" class="modal-overlay hidden">
+  <div class="modal-panel" style="max-width:420px">
+    <div style="padding:36px 32px;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">🎉</div>
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Account Created!</h2>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:28px">Your unique User ID has been generated. <strong style="color:var(--text)">Save this</strong> — you'll need it to sign in next time.</p>
+      <div style="background:var(--dim);border:2px solid var(--green);border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:var(--muted);margin-bottom:8px">YOUR USER ID</div>
+        <div id="new-userid-display" style="font-size:28px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace;letter-spacing:2px"></div>
+      </div>
+      <button onclick="copyAndDismissUserId()" style="width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:800;letter-spacing:1px;margin-bottom:10px">📋 COPY & CONTINUE →</button>
+      <p style="font-size:10px;color:var(--muted)">This ID is stored in your browser. Write it down as a backup.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════════════════════
    NPIDE — WITH SIGN UP / SIGN IN USER FLOW
-   New user  → chooses UserID → chat onboarding
+   New user  → generates UserID → chat onboarding
    Returning → enter UserID   → instant dashboard
    ═══════════════════════════════════════════════════════════ */
 
@@ -566,17 +581,18 @@ function updateApiStatus() {
 checkBackend();
 
 /* ─── USER ID UTILITIES ─── */
-function normalizeUserId(userId) {
-  return String(userId || "").trim().toLowerCase();
-}
-function isValidUserId(userId) {
-  return /^[a-zA-Z0-9._-]{4,24}$/.test(String(userId || "").trim());
+function generateUserId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id = 'NPIDE-';
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
 }
 function saveUserById(userId, data) {
-  localStorage.setItem(`npide_uid_${normalizeUserId(userId)}`, JSON.stringify(data));
+  // Store by UserID for sign-in lookup
+  localStorage.setItem(`npide_uid_${userId}`, JSON.stringify(data));
 }
 function loadUserById(userId) {
-  return JSON.parse(localStorage.getItem(`npide_uid_${normalizeUserId(userId)}`) || 'null');
+  return JSON.parse(localStorage.getItem(`npide_uid_${userId}`) || 'null');
 }
 // Keep legacy name-based session for backwards compat
 function saveSession() {
@@ -590,7 +606,7 @@ function loadSession(name) {
 }
 function clearSession() {
   if (!state.currentUser) return;
-  if (state.currentUser.userId) localStorage.removeItem(`npide_uid_${normalizeUserId(state.currentUser.userId)}`);
+  if (state.currentUser.userId) localStorage.removeItem(`npide_uid_${state.currentUser.userId}`);
   localStorage.removeItem(`npide_session_${state.currentUser.name.toLowerCase()}`);
 }
 
@@ -717,29 +733,22 @@ function doLogin() {
   // ── CITIZEN: SIGN UP ──
   if (authMode === 'signup') {
     const n = document.getElementById("signup-name").value.trim();
-    const chosenUserId = document.getElementById("signup-userid").value.trim();
     if (n.length < 2) { err.textContent="⚠ Please enter your full name (at least 2 characters)"; err.classList.remove("hidden"); return; }
-    if (!isValidUserId(chosenUserId)) {
-      err.textContent="⚠ User ID must be 4-24 characters and can only use letters, numbers, '.', '_' or '-'.";
-      err.classList.remove("hidden"); return;
-    }
-    if (loadUserById(chosenUserId)) {
-      err.textContent="⚠ That User ID is already taken. Please choose another one.";
-      err.classList.remove("hidden"); return;
-    }
-    state.currentUser = {role:"user", name:n, userId: chosenUserId};
+    const userId = generateUserId();
+    state.currentUser = {role:"user", name:n, userId};
     state.profile = {name: n};
     state.appliedSchemes = [];
     showTopbar();
-    startChat();
+    // Show UserID reveal modal, then start chat
+    showUserIdModal(userId);
     return;
   }
 
   // ── CITIZEN: SIGN IN ──
   if (authMode === 'signin') {
-    const uid = document.getElementById("signin-userid").value.trim();
-    if (!isValidUserId(uid)) {
-      err.textContent = "⚠ Invalid User ID format. Use 4-24 letters, numbers, '.', '_' or '-'.";
+    const uid = document.getElementById("signin-userid").value.trim().toUpperCase();
+    if (!uid.startsWith('NPIDE-') || uid.length < 12) {
+      err.textContent = "⚠ Invalid User ID format. It should look like NPIDE-XXXXXX";
       err.classList.remove("hidden"); return;
     }
     const saved = loadUserById(uid);
@@ -747,12 +756,24 @@ function doLogin() {
       err.textContent = "⚠ No account found with this User ID. Please check and try again.";
       err.classList.remove("hidden"); return;
     }
-    state.currentUser = {role:"user", name:saved.name, userId:saved.userId || uid};
+    state.currentUser = {role:"user", name:saved.name, userId:uid};
     state.profile = saved.profile || {name: saved.name};
     state.appliedSchemes = saved.appliedSchemes || [];
     showTopbar();
     showReturningUser();
   }
+}
+
+/* ═══ USER ID MODAL ═══ */
+function showUserIdModal(userId) {
+  document.getElementById('new-userid-display').textContent = userId;
+  document.getElementById('userid-modal').classList.remove('hidden');
+}
+function copyAndDismissUserId() {
+  const uid = state.currentUser?.userId;
+  if (uid && navigator.clipboard) navigator.clipboard.writeText(uid).catch(()=>{});
+  document.getElementById('userid-modal').classList.add('hidden');
+  startChat();
 }
 
 /* ═══ RETURNING USER ═══ */
@@ -800,7 +821,7 @@ function logout() {
   if (state.currentUser) saveSession();
   state = {...state, currentUser:null, profile:{}, chatStep:0, currentFilter:"all", appliedSchemes:[], adminSection:"overview", peTab:0, peLogs:[], peSchemes:null};
   document.getElementById("topbar").classList.add("hidden");
-  ['signup-name','signup-userid','signin-userid','admin-user','admin-pass'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  ['signup-name','signin-userid','admin-user','admin-pass'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById("returning-banner-wrap").innerHTML = "";
   authMode = 'signup';
   setAuthMode('signup');
@@ -1132,31 +1153,59 @@ function closeSchemeModal(){ document.getElementById("scheme-modal").classList.a
 /* ═══ ADMIN ═══ */
 const mockGrievances=[];
 
-function getTrendColor(trend){
-  if(trend === "worsening") return "#EF4444";
-  if(trend === "stable") return "#F59E0B";
-  return "#10B981";
+function seededPredictionRandom(seed, low, high){
+  const val = Math.sin(seed) * 43758.5453123;
+  const frac = val - Math.floor(val);
+  return low + frac * (high - low);
+}
+function generatePredictionHistory(district, districtIdx){
+  const history = [];
+  for(let month=0; month<6; month++){
+    const seed = districtIdx * 100 + month * 7;
+    const expected = Math.floor(seededPredictionRandom(seed + 1, 5000, 25000));
+    const noise = seededPredictionRandom(seed + 2, 0.55, 1.0);
+    const actual = Math.floor(expected * noise);
+    history.push({month:month+1, expected, actual, population:district.population, schemes:district.schemes});
+  }
+  return history;
+}
+function engineerPredictionFeatures(history){
+  const gaps = history.map(h => (h.expected - h.actual) / h.expected);
+  const gapRatio = gaps.reduce((a,b)=>a+b,0) / gaps.length;
+  const coverageRate = history.reduce((sum,h)=>sum + (h.actual / h.population * 1000),0) / history.length;
+  const schemeDensity = history[0].schemes / (history[0].population / 1000000);
+  const trend = gaps[gaps.length-1] - gaps[0];
+  return {
+    gap_ratio: Number(gapRatio.toFixed(4)),
+    coverage_rate: Number(coverageRate.toFixed(4)),
+    scheme_density: Number(schemeDensity.toFixed(4)),
+    trend: Number(trend.toFixed(4))
+  };
+}
+function createPredictionLabel(features){
+  let score = 0;
+  if(features.gap_ratio > 0.30) score += 1;
+  if(features.coverage_rate < 5.0) score += 1;
+  if(features.scheme_density < 10.0) score += 1;
+  if(features.trend > 0.05) score += 1;
+  return score >= 2 ? 1 : 0;
+}
+function calculateFailureProbability(features, label){
+  const raw = (
+    (features.gap_ratio * 2.3) +
+    ((5 - Math.min(features.coverage_rate, 5)) * 0.12) +
+    ((10 - Math.min(features.scheme_density, 10)) * 0.055) +
+    (Math.max(features.trend, -0.2) * 1.5) +
+    (label ? 0.55 : 0.05)
+  );
+  const probability = 1 / (1 + Math.exp(-(raw - 1.05)));
+  return Number(Math.max(0.05, Math.min(0.98, probability)).toFixed(4));
 }
 function getFailurePredictionResults(){
   return (appData.predictions || []).slice().sort((a,b)=>b.failure_probability-a.failure_probability);
 }
 function renderFailurePrediction(){
   const predictions = getFailurePredictionResults();
-  if(!predictions.length){
-    return `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px">
-        <div>
-          <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">District Welfare Scheme Failure Prediction</h2>
-          <p style="color:var(--muted);font-size:13px">This screen reads directly from the backend \`/failure-predictions\` API and its database query output.</p>
-        </div>
-        ${makePill("Database-backed", "#A78BFA")}
-      </div>
-      <div class="prediction-card" style="border-color:#64748B44">
-        <div class="prediction-title">No Prediction Data</div>
-        <div class="prediction-meta">The backend returned no district predictions. Check the \`district_monthly\` table and refresh the page.</div>
-      </div>
-    `;
-  }
   const highRisk = predictions.filter(p => p.failure_probability > 0.7);
   const mediumRisk = predictions.filter(p => p.risk_level === "MEDIUM");
   const avgProbability = predictions.reduce((sum,p)=>sum+p.failure_probability,0) / predictions.length;
@@ -1164,9 +1213,9 @@ function renderFailurePrediction(){
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px">
       <div>
         <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">District Welfare Scheme Failure Prediction</h2>
-        <p style="color:var(--muted);font-size:13px">Live backend output sourced from the database-backed district prediction pipeline.</p>
+        <p style="color:var(--muted);font-size:13px">Synthetic 6-month district model inspired by your Gradient Boosting pipeline, exposed directly in the administrator dashboard.</p>
       </div>
-      ${makePill("Database-backed", "#A78BFA")}
+      ${makePill("Admin AI Monitor", "#A78BFA")}
     </div>
     <div class="prediction-grid">
       <div class="stat-card" style="border-color:#EF444444"><div class="stat-num" style="color:#EF4444">${highRisk.length}</div><div class="stat-label">High Risk Districts</div></div>
@@ -1220,7 +1269,7 @@ function renderFailurePrediction(){
               <td>${p.gap_ratio.toFixed(2)}</td>
               <td>${p.coverage_rate.toFixed(2)}</td>
               <td>${p.scheme_density.toFixed(2)}</td>
-              <td>${makePill(p.trend, getTrendColor(p.trend))}</td>
+              <td>${makePill(p.trend, p.trend==="worsening" ? "#EF4444" : "#10B981")}</td>
             </tr>
           `).join("")}
         </tbody>

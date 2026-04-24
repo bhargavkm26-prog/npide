@@ -6,10 +6,13 @@ import asyncio
 import os
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
@@ -70,6 +73,10 @@ Async FastAPI with local DB/cache fallbacks.
     lifespan=lifespan,
 )
 
+BASE_DIR = Path(__file__).resolve().parent
+FRONTEND_DIST_DIR = BASE_DIR / "frontend" / "dist"
+FRONTEND_ASSETS_DIR = FRONTEND_DIST_DIR / "assets"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -89,9 +96,19 @@ from backend.api.routes import router
 
 app.include_router(router, prefix="/api/v1")
 
+if FRONTEND_ASSETS_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=FRONTEND_ASSETS_DIR), name="frontend-assets")
+
+
+def frontend_available() -> bool:
+    return FRONTEND_DIST_DIR.joinpath("index.html").exists()
+
 
 @app.get("/")
 async def root():
+    if frontend_available():
+        return FileResponse(FRONTEND_DIST_DIR / "index.html")
+
     return {
         "project": "NPIDE",
         "version": "2.0.0",
@@ -100,6 +117,18 @@ async def root():
         "health": "/api/v1/health",
         "architecture": "async FastAPI + SQLite fallback + memory cache + IsolationForest + grievance classifier",
     }
+
+
+@app.get("/{full_path:path}")
+async def spa_fallback(full_path: str):
+    if not frontend_available():
+        raise HTTPException(status_code=404, detail="Frontend build not found")
+
+    target = FRONTEND_DIST_DIR / full_path
+    if full_path and target.is_file():
+        return FileResponse(target)
+
+    return FileResponse(FRONTEND_DIST_DIR / "index.html")
 
 
 if __name__ == "__main__":

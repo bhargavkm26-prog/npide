@@ -33,6 +33,7 @@ from backend.data_layer.async_queries import (
     async_get_citizen_applications, async_get_zero_application_schemes,
     async_get_corruption_cases, async_get_dashboard_stats,
     async_get_scheme_analytics, async_insert_grievance,
+    async_list_grievances, async_get_failure_predictions,
     async_list_schemes, async_create_scheme, async_update_scheme, async_deactivate_scheme,
 )
 from backend.intelligence.eligibility_engine import (
@@ -339,6 +340,30 @@ async def grievance_hotspots():
 async def corruption_cases():
     cases = await async_get_corruption_cases()
     return {"count": len(cases), "cases": cases}
+
+
+@router.get("/grievances", tags=["Grievances"])
+async def list_grievances(limit: int = Query(50, ge=1, le=500)):
+    grievances = await async_list_grievances(limit=limit)
+    return {"count": len(grievances), "grievances": grievances}
+
+
+@router.get("/failure-predictions", tags=["Monitoring"])
+async def failure_predictions(state: Optional[str] = Query(None)):
+    cache_key = f"failure_predictions:{state or 'ALL'}"
+    cached = await async_cache_get(cache_key)
+    if cached:
+        return {**cached, "source": "cache"}
+
+    predictions = await async_get_failure_predictions(state=state)
+    result = {
+        "count": len(predictions),
+        "predictions": predictions,
+        "computed_at": time.time(),
+        "source": "computed",
+    }
+    await async_cache_set(cache_key, result, ttl=300)
+    return result
 
 
 # ─────────────────────────────────────────────────────────────

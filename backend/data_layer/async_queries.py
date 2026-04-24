@@ -8,6 +8,8 @@ Sync versions still exist in queries.py for intelligence layer
 (which runs in thread pool via asyncio.to_thread).
 """
 
+import math
+from collections import defaultdict
 from typing import Optional
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -187,6 +189,110 @@ async def async_insert_grievance(data: dict) -> int:
     async with async_engine.begin() as conn:
         result = await conn.execute(sql, data)
         return result.scalar()
+
+
+async def async_list_grievances(limit: int = 50) -> list[dict]:
+    sql = text("""
+        SELECT
+            grievance_id AS id,
+            citizen_id,
+            scheme_id,
+            location,
+            category,
+            description,
+            severity,
+            status,
+            filed_on,
+            resolved_on,
+            created_at
+        FROM grievances
+        ORDER BY created_at DESC, grievance_id DESC
+        LIMIT :limit
+    """)
+    async with async_engine.connect() as conn:
+        rows = (await conn.execute(sql, {"limit": limit})).mappings().fetchall()
+    return [dict(r) for r in rows]
+
+
+async def async_get_failure_predictions(state: Optional[str] = None) -> list[dict]:
+    where_clause = "WHERE state = :state" if state else ""
+    params = {"state": state} if state else {}
+    sql = text(f"""
+        SELECT district, state, month, expected, actual, population, schemes
+        FROM district_monthly
+        {where_clause}
+        ORDER BY district ASC, month ASC
+    """)
+    async with async_engine.connect() as conn:
+        rows = (await conn.execute(sql, params)).mappings().fetchall()
+
+    grouped: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        grouped[row["district"]].append(dict(row))
+
+    predictions = []
+    for district, history in grouped.items():
+        history.sort(key=lambda item: item["month"])
+        gaps = []
+        coverage_values = []
+        scheme_density_values = []
+
+        for item in history:
+            expected = max(int(item.get("expected") or 0), 1)
+            actual = max(int(item.get("actual") or 0), 0)
+            population = max(int(item.get("population") or 0), 1)
+            schemes = max(int(item.get("schemes") or 0), 0)
+
+            gaps.append((expected - actual) / expected)
+            coverage_values.append(actual / population * 1000)
+            scheme_density_values.append(schemes / (population / 1_000_000))
+
+        gap_ratio = sum(gaps) / len(gaps)
+        coverage_rate = sum(coverage_values) / len(coverage_values)
+        scheme_density = sum(scheme_density_values) / len(scheme_density_values)
+        trend_value = gaps[-1] - gaps[0] if len(gaps) > 1 else 0.0
+
+        label = 0
+        if gap_ratio > 0.30:
+            label += 1
+        if coverage_rate < 5.0:
+            label += 1
+        if scheme_density < 10.0:
+            label += 1
+        if trend_value > 0.05:
+            label += 1
+
+        raw_score = (
+            (gap_ratio * 2.3)
+            + ((5 - min(coverage_rate, 5)) * 0.12)
+            + ((10 - min(scheme_density, 10)) * 0.055)
+            + (max(trend_value, -0.2) * 1.5)
+            + (0.55 if label >= 2 else 0.05)
+        )
+        failure_probability = 1 / (1 + math.exp(-(raw_score - 1.05)))
+        failure_probability = round(max(0.05, min(0.98, failure_probability)), 4)
+
+        risk_level = "HIGH" if failure_probability >= 0.7 else ("MEDIUM" if failure_probability >= 0.4 else "LOW")
+        if trend_value > 0.04:
+            trend_label = "worsening"
+        elif trend_value < -0.04:
+            trend_label = "improving"
+        else:
+            trend_label = "stable"
+
+        predictions.append({
+            "district": district,
+            "state": history[0].get("state"),
+            "failure_probability": failure_probability,
+            "risk_level": risk_level,
+            "gap_ratio": round(gap_ratio, 4),
+            "coverage_rate": round(coverage_rate, 4),
+            "scheme_density": round(scheme_density, 4),
+            "trend": trend_label,
+        })
+
+    predictions.sort(key=lambda item: item["failure_probability"], reverse=True)
+    return predictions
 
 
 async def async_list_schemes(include_inactive: bool = True) -> list[dict]:
