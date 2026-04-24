@@ -153,3 +153,21 @@ SELECT
 FROM grievances
 GROUP BY location, category
 ORDER BY total_complaints DESC;
+
+-- ============================================================
+-- TABLE 6: district_monthly (FOR AI PREDICTION)
+-- ============================================================
+
+CREATE TABLE district_monthly (
+    id SERIAL PRIMARY KEY,
+    district VARCHAR(100),
+    state VARCHAR(100),
+    month INT,
+    expected INT,
+    actual INT,
+    population INT,
+    schemes INT
+);
+
+CREATE INDEX idx_district_monthly_state ON district_monthly(state);
+CREATE INDEX idx_district_monthly_district ON district_monthly(district);

@@ -705,3 +705,186 @@ INSERT INTO policy_analytics (scheme_id, total_eligible, total_applied, total_ap
   (9,  180, 180,   0,    0.00),  -- MGNREGA: all 'wrong_rejection', 0 resolved
   (10, 180,   0, 180,  100.00); -- Beti Bachao Awareness: all 'no_awareness' → all resolved
 
+
+INSERT INTO district_monthly (district, state, month, expected, actual, population, schemes) VALUES
+-- Karnataka
+('Raichur','Karnataka',1,10000,7000,1200000,15),
+('Raichur','Karnataka',2,11000,6500,1200000,15),
+('Raichur','Karnataka',3,12000,6000,1200000,15),
+('Raichur','Karnataka',4,13000,5500,1200000,15),
+('Raichur','Karnataka',5,14000,5000,1200000,15),
+('Raichur','Karnataka',6,15000,4500,1200000,15),
+('Hassan','Karnataka',1,10000,7200,1800000,16),
+('Hassan','Karnataka',2,11000,6800,1800000,16),
+('Hassan','Karnataka',3,12000,6400,1800000,16),
+('Hassan','Karnataka',4,13000,6000,1800000,16),
+('Hassan','Karnataka',5,14000,5600,1800000,16),
+('Hassan','Karnataka',6,15000,5200,1800000,16),
+('Ballari','Karnataka',1,10000,7100,2400000,17),
+('Ballari','Karnataka',2,11000,6700,2400000,17),
+('Ballari','Karnataka',3,12000,6300,2400000,17),
+('Ballari','Karnataka',4,13000,5900,2400000,17),
+('Ballari','Karnataka',5,14000,5500,2400000,17),
+('Ballari','Karnataka',6,15000,5100,2400000,17),
+
+-- Tamil Nadu
+('Madurai','Tamil Nadu',1,10000,7400,3000000,18),
+('Madurai','Tamil Nadu',2,11000,7000,3000000,18),
+('Madurai','Tamil Nadu',3,12000,6600,3000000,18),
+('Madurai','Tamil Nadu',4,13000,6200,3000000,18),
+('Madurai','Tamil Nadu',5,14000,5800,3000000,18),
+('Madurai','Tamil Nadu',6,15000,5400,3000000,18),
+
+('Salem','Tamil Nadu',1,10000,7300,3500000,17),
+('Salem','Tamil Nadu',2,11000,6900,3500000,17),
+('Salem','Tamil Nadu',3,12000,6500,3500000,17),
+('Salem','Tamil Nadu',4,13000,6100,3500000,17),
+('Salem','Tamil Nadu',5,14000,5700,3500000,17),
+('Salem','Tamil Nadu',6,15000,5300,3500000,17),
+
+-- Maharashtra
+('Nagpur','Maharashtra',1,10000,7600,5000000,20),
+('Nagpur','Maharashtra',2,11000,7200,5000000,20),
+('Nagpur','Maharashtra',3,12000,6800,5000000,20),
+('Nagpur','Maharashtra',4,13000,6400,5000000,20),
+('Nagpur','Maharashtra',5,14000,6000,5000000,20),
+('Nagpur','Maharashtra',6,15000,5600,5000000,20),
+
+('Nashik','Maharashtra',1,10000,7500,4000000,19),
+('Nashik','Maharashtra',2,11000,7100,4000000,19),
+('Nashik','Maharashtra',3,12000,6700,4000000,19),
+('Nashik','Maharashtra',4,13000,6300,4000000,19),
+('Nashik','Maharashtra',5,14000,5900,4000000,19),
+('Nashik','Maharashtra',6,15000,5500,4000000,19),
+
+-- Gujarat
+('Vadodara','Gujarat',1,10000,7200,3500000,18),
+('Vadodara','Gujarat',2,11000,6800,3500000,18),
+('Vadodara','Gujarat',3,12000,6400,3500000,18),
+('Vadodara','Gujarat',4,13000,6000,3500000,18),
+('Vadodara','Gujarat',5,14000,5600,3500000,18),
+('Vadodara','Gujarat',6,15000,5200,3500000,18),
+
+('Rajkot','Gujarat',1,10000,7100,3000000,17),
+('Rajkot','Gujarat',2,11000,6700,3000000,17),
+('Rajkot','Gujarat',3,12000,6300,3000000,17),
+('Rajkot','Gujarat',4,13000,5900,3000000,17),
+('Rajkot','Gujarat',5,14000,5500,3000000,17),
+('Rajkot','Gujarat',6,15000,5100,3000000,17),
+
+-- Rajasthan
+('Jaipur','Rajasthan',1,10000,7700,6000000,21),
+('Jaipur','Rajasthan',2,11000,7300,6000000,21),
+('Jaipur','Rajasthan',3,12000,6900,6000000,21),
+('Jaipur','Rajasthan',4,13000,6500,6000000,21),
+('Jaipur','Rajasthan',5,14000,6100,6000000,21),
+('Jaipur','Rajasthan',6,15000,5700,6000000,21),
+
+('Jodhpur','Rajasthan',1,10000,7400,3500000,19),
+('Jodhpur','Rajasthan',2,11000,7000,3500000,19),
+('Jodhpur','Rajasthan',3,12000,6600,3500000,19),
+('Jodhpur','Rajasthan',4,13000,6200,3500000,19),
+('Jodhpur','Rajasthan',5,14000,5800,3500000,19),
+('Jodhpur','Rajasthan',6,15000,5400,3500000,19),
+
+-- Uttar Pradesh
+('Varanasi','Uttar Pradesh',1,10000,7600,4000000,20),
+('Varanasi','Uttar Pradesh',2,11000,7200,4000000,20),
+('Varanasi','Uttar Pradesh',3,12000,6800,4000000,20),
+('Varanasi','Uttar Pradesh',4,13000,6400,4000000,20),
+('Varanasi','Uttar Pradesh',5,14000,6000,4000000,20),
+('Varanasi','Uttar Pradesh',6,15000,5600,4000000,20),
+
+('Prayagraj','Uttar Pradesh',1,10000,7400,5000000,21),
+('Prayagraj','Uttar Pradesh',2,11000,7000,5000000,21),
+('Prayagraj','Uttar Pradesh',3,12000,6600,5000000,21),
+('Prayagraj','Uttar Pradesh',4,13000,6200,5000000,21),
+('Prayagraj','Uttar Pradesh',5,14000,5800,5000000,21),
+('Prayagraj','Uttar Pradesh',6,15000,5400,5000000,21),
+
+-- West Bengal
+('Howrah','West Bengal',1,10000,7300,3000000,18),
+('Howrah','West Bengal',2,11000,6900,3000000,18),
+('Howrah','West Bengal',3,12000,6500,3000000,18),
+('Howrah','West Bengal',4,13000,6100,3000000,18),
+('Howrah','West Bengal',5,14000,5700,3000000,18),
+('Howrah','West Bengal',6,15000,5300,3000000,18),
+
+('Durgapur','West Bengal',1,10000,7200,2500000,17),
+('Durgapur','West Bengal',2,11000,6800,2500000,17),
+('Durgapur','West Bengal',3,12000,6400,2500000,17),
+('Durgapur','West Bengal',4,13000,6000,2500000,17),
+('Durgapur','West Bengal',5,14000,5600,2500000,17),
+('Durgapur','West Bengal',6,15000,5200,2500000,17),
+
+-- Kerala
+('Kochi','Kerala',1,10000,7800,2000000,19),
+('Kochi','Kerala',2,11000,7400,2000000,19),
+('Kochi','Kerala',3,12000,7000,2000000,19),
+('Kochi','Kerala',4,13000,6600,2000000,19),
+('Kochi','Kerala',5,14000,6200,2000000,19),
+('Kochi','Kerala',6,15000,5800,2000000,19),
+
+('Thiruvananthapuram','Kerala',1,10000,7700,2500000,20),
+('Thiruvananthapuram','Kerala',2,11000,7300,2500000,20),
+('Thiruvananthapuram','Kerala',3,12000,6900,2500000,20),
+('Thiruvananthapuram','Kerala',4,13000,6500,2500000,20),
+('Thiruvananthapuram','Kerala',5,14000,6100,2500000,20),
+('Thiruvananthapuram','Kerala',6,15000,5700,2500000,20),
+
+-- Andhra Pradesh
+('Visakhapatnam','Andhra Pradesh',1,10000,7600,4000000,20),
+('Visakhapatnam','Andhra Pradesh',2,11000,7200,4000000,20),
+('Visakhapatnam','Andhra Pradesh',3,12000,6800,4000000,20),
+('Visakhapatnam','Andhra Pradesh',4,13000,6400,4000000,20),
+('Visakhapatnam','Andhra Pradesh',5,14000,6000,4000000,20),
+('Visakhapatnam','Andhra Pradesh',6,15000,5600,4000000,20),
+
+('Guntur','Andhra Pradesh',1,10000,7400,2500000,18),
+('Guntur','Andhra Pradesh',2,11000,7000,2500000,18),
+('Guntur','Andhra Pradesh',3,12000,6600,2500000,18),
+('Guntur','Andhra Pradesh',4,13000,6200,2500000,18),
+('Guntur','Andhra Pradesh',5,14000,5800,2500000,18),
+('Guntur','Andhra Pradesh',6,15000,5400,2500000,18),
+
+-- Telangana
+('Warangal','Telangana',1,10000,7500,2000000,18),
+('Warangal','Telangana',2,11000,7100,2000000,18),
+('Warangal','Telangana',3,12000,6700,2000000,18),
+('Warangal','Telangana',4,13000,6300,2000000,18),
+('Warangal','Telangana',5,14000,5900,2000000,18),
+('Warangal','Telangana',6,15000,5500,2000000,18),
+
+('Karimnagar','Telangana',1,10000,7300,1800000,17),
+('Karimnagar','Telangana',2,11000,6900,1800000,17),
+('Karimnagar','Telangana',3,12000,6500,1800000,17),
+('Karimnagar','Telangana',4,13000,6100,1800000,17),
+('Karimnagar','Telangana',5,14000,5700,1800000,17),
+('Karimnagar','Telangana',6,15000,5300,1800000,17),
+
+-- Odisha
+('Bhubaneswar','Odisha',1,10000,7200,1500000,17),
+('Bhubaneswar','Odisha',2,11000,6800,1500000,17),
+('Bhubaneswar','Odisha',3,12000,6400,1500000,17),
+('Bhubaneswar','Odisha',4,13000,6000,1500000,17),
+('Bhubaneswar','Odisha',5,14000,5600,1500000,17),
+('Bhubaneswar','Odisha',6,15000,5200,1500000,17),
+
+-- Jharkhand
+('Ranchi','Jharkhand',1,10000,7300,3000000,18),
+('Ranchi','Jharkhand',2,11000,6900,3000000,18),
+('Ranchi','Jharkhand',3,12000,6500,3000000,18),
+('Ranchi','Jharkhand',4,13000,6100,3000000,18),
+('Ranchi','Jharkhand',5,14000,5700,3000000,18),
+('Ranchi','Jharkhand',6,15000,5300,3000000,18),
+
+-- Madhya Pradesh
+('Indore','Madhya Pradesh',1,10000,7600,3000000,19),
+('Indore','Madhya Pradesh',2,11000,7200,3000000,19),
+('Indore','Madhya Pradesh',3,12000,6800,3000000,19),
+('Indore','Madhya Pradesh',4,13000,6400,3000000,19),
+('Indore','Madhya Pradesh',5,14000,6000,3000000,19),
+('Indore','Madhya Pradesh',6,15000,5600,3000000,19),
+('Dehradun','Uttarakhand',1,10000,7400,1500000,18),
+('Dehradun','Uttarakhand',2,11000,7000,1500000,18);
+
