@@ -85,9 +85,10 @@ async def metrics_middleware(request: Request, call_next):
     return await track_request(request, call_next)
 
 
-from backend.api.routes import router
+from backend.api.routes import router, pred_router
 
 app.include_router(router, prefix="/api/v1")
+app.include_router(pred_router)   # mounts at /api/predictions (no /v1 prefix)
 
 
 @app.get("/")
