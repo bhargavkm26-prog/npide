@@ -1,6 +1,1146 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+<<<<<<< HEAD
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NPIDE — National Policy Intelligence & Delivery Engine</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #030508;
+      --surface: #080C14;
+      --card: #0D1420;
+      --border: #162035;
+      --border2: #1E2E48;
+      --accent: #00D4FF;
+      --accent2: #0099BB;
+      --accent-dim: #003344;
+      --green: #00E5A0;
+      --red: #FF4560;
+      --amber: #FFB020;
+      --purple: #9B6FFF;
+      --text: #E8F0FF;
+      --muted: #4A6080;
+      --dim: #111827;
+      --font-head: 'Syne', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    @keyframes countUp {
+      from {
+        opacity: 0;
+        transform: scale(0.8)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    .anim-in {
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 3px;
+    }
+
+    /* ── Topbar ── */
+    #topbar {
+      background: rgba(8, 12, 20, 0.92);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .top-wordmark {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--accent);
+    }
+
+    .top-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border2);
+    }
+
+    .top-subtitle {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .pill {
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      letter-spacing: 1px;
+      font-family: var(--font-mono);
+    }
+
+    .api-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .api-dot.live {
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    .api-dot.error {
+      background: var(--red);
+    }
+
+    /* ── Predictive Engine ── */
+    .pred-wrap {
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .pred-header {
+      background: linear-gradient(135deg, #020810 0%, #030C1A 100%);
+      border-bottom: 1px solid #14213A;
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pred-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      background: rgba(255, 70, 96, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(255, 70, 96, 0.3);
+      border-radius: 3px;
+      padding: 3px 8px;
+    }
+
+    .pred-run-btn {
+      background: linear-gradient(135deg, var(--red), #FF8C20);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 22px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pred-run-btn:hover {
+      opacity: 0.88;
+    }
+
+    .pred-run-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pred-body {
+      padding: 24px 28px;
+    }
+
+    .pred-stats-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .pred-stat {
+      background: #060A12;
+      border: 1px solid #14213A;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .pred-stat-num {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1;
+      font-family: var(--font-mono);
+      animation: countUp 0.5s ease;
+    }
+
+    .pred-stat-label {
+      font-size: 9px;
+      color: #4A6080;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 5px;
+      font-family: var(--font-mono);
+    }
+
+    /* State filter bar */
+    .state-filter-wrap {
+      background: #060A12;
+      border: 1px solid #14213A;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+
+    .state-filter-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #4A6080;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      margin-bottom: 10px;
+    }
+
+    .state-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .state-chip {
+      padding: 4px 11px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      border: 1px solid #14213A;
+      background: #030508;
+      color: #4A6080;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+      transition: all 0.15s;
+    }
+
+    .state-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .state-chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 212, 255, 0.06);
+    }
+
+    /* Risk table */
+    .risk-table-wrap {
+      background: #060A12;
+      border: 1px solid #14213A;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .risk-table-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid #14213A;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .risk-table-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #E8F0FF;
+    }
+
+    .risk-filter-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .risk-filter-btn {
+      padding: 4px 11px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      border: 1px solid #14213A;
+      background: #030508;
+      color: #4A6080;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+      transition: all 0.15s;
+    }
+
+    .risk-filter-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 212, 255, 0.06);
+    }
+
+    .risk-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 110px 100px 80px 90px 90px;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(20, 33, 58, 0.5);
+      gap: 10px;
+      transition: background 0.15s;
+    }
+
+    .risk-row:hover {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .risk-row.risk-thead {
+      background: #030508;
+    }
+
+    .risk-row.risk-thead span {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #4A6080;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .district-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #E8F0FF;
+    }
+
+    .state-tag {
+      font-size: 9px;
+      color: #4A6080;
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+
+    .prob-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .prob-bar-track {
+      flex: 1;
+      height: 6px;
+      background: #14213A;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+
+    .prob-pct {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      min-width: 38px;
+      text-align: right;
+    }
+
+    .risk-badge {
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 4px 9px;
+      letter-spacing: 1.5px;
+      font-family: var(--font-mono);
+      text-align: center;
+    }
+
+    .risk-HIGH {
+      background: rgba(255, 70, 96, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(255, 70, 96, 0.3);
+    }
+
+    .risk-MEDIUM {
+      background: rgba(255, 176, 32, 0.12);
+      color: var(--amber);
+      border: 1px solid rgba(255, 176, 32, 0.3);
+    }
+
+    .risk-LOW {
+      background: rgba(0, 229, 160, 0.1);
+      color: var(--green);
+      border: 1px solid rgba(0, 229, 160, 0.25);
+    }
+
+    .trend-up {
+      color: var(--red);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .trend-down {
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .feat-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #7090B0;
+    }
+
+    /* Alert panel */
+    .alert-panel {
+      background: linear-gradient(135deg, rgba(255, 70, 96, 0.07), rgba(255, 140, 32, 0.04));
+      border: 1px solid rgba(255, 70, 96, 0.25);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+
+    .alert-panel-hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .alert-pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse 1.2s infinite;
+    }
+
+    .alert-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--red);
+    }
+
+    .alert-district-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 70, 96, 0.2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .alert-district-name {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .alert-district-meta {
+      font-size: 10px;
+      color: #7090B0;
+      margin-top: 3px;
+      font-family: var(--font-mono);
+    }
+
+    /* Agent chat */
+    .agent-panel {
+      background: #060A12;
+      border: 1px solid #14213A;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .agent-panel-hdr {
+      padding: 14px 20px;
+      border-bottom: 1px solid #14213A;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .agent-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .agent-chat-box {
+      padding: 16px 20px;
+      max-height: 340px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 120px;
+    }
+
+    .agent-msg {
+      padding: 11px 15px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.65;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .agent-msg.system {
+      background: #030508;
+      border: 1px solid #14213A;
+      color: #7090B0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .agent-msg.bot {
+      background: #0A1520;
+      border: 1px solid #14213A;
+      color: #C8D8F0;
+    }
+
+    .agent-msg.user {
+      background: rgba(0, 212, 255, 0.08);
+      border: 1px solid rgba(0, 212, 255, 0.15);
+      color: var(--text);
+      align-self: flex-end;
+      max-width: 80%;
+    }
+
+    .agent-input-row {
+      padding: 12px 20px;
+      border-top: 1px solid #14213A;
+      display: flex;
+      gap: 8px;
+    }
+
+    .agent-input {
+      flex: 1;
+      background: #030508;
+      border: 1px solid #14213A;
+      border-radius: 7px;
+      padding: 9px 13px;
+      color: #E8F0FF;
+      font-size: 12px;
+      outline: none;
+      font-family: var(--font-mono);
+    }
+
+    .agent-input:focus {
+      border-color: var(--accent);
+    }
+
+    .agent-send-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 7px;
+      padding: 9px 16px;
+      color: var(--bg);
+      font-size: 10px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      letter-spacing: 1.5px;
+    }
+
+    .agent-send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Feature importance */
+    .feat-imp-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .feat-imp-name {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #7090B0;
+      width: 120px;
+      flex-shrink: 0;
+    }
+
+    .feat-imp-track {
+      flex: 1;
+      height: 8px;
+      background: #14213A;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .feat-imp-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+    }
+
+    .feat-imp-val {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--accent);
+      width: 38px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .pe-card {
+      background: #060A12;
+      border: 1px solid #14213A;
+      border-radius: 8px;
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    .pe-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #4A6080;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-family: var(--font-mono);
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #14213A;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    /* Error state */
+    .error-banner {
+      background: rgba(255, 70, 96, 0.08);
+      border: 1px solid rgba(255, 70, 96, 0.3);
+      border-radius: 10px;
+      padding: 20px 24px;
+      text-align: center;
+    }
+
+    .error-banner-title {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+
+    .error-banner-sub {
+      font-size: 11px;
+      color: #7090B0;
+      line-height: 1.6;
+    }
+
+    /* Empty state */
+    .pred-empty {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .pred-empty-icon {
+      font-size: 48px;
+      margin-bottom: 14px;
+      opacity: 0.5;
+    }
+
+    .pred-empty-title {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: #4A6080;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div class="top-wordmark">NPIDE</div>
+    <div class="top-divider"></div>
+    <div class="top-subtitle">Policy Intelligence Engine</div>
+    <div id="db-status" style="margin-left:auto;font-size:10px;color:var(--muted);font-family:var(--font-mono)">
+      <span class="api-dot live"></span>Connecting to database…
+    </div>
+  </div>
+
+  <!-- PREDICTIVE ENGINE -->
+  <div class="pred-wrap">
+    <div class="pred-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
+          <span class="pred-badge">ML · GRADIENT BOOSTING</span>
+          <span style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:#E8F0FF">DISTRICT FAILURE
+            PREDICTION ENGINE</span>
+        </div>
+        <div style="font-size:11px;color:#4A6080;font-family:var(--font-mono)">
+          Predicts which districts will fail welfare delivery next month · Live data from <code
+            style="color:var(--accent)">district_monthly</code> PostgreSQL table
+        </div>
+      </div>
+      <button class="pred-run-btn" id="pred-run-btn" onclick="triggerPrediction()">
+        ▶ RUN PREDICTION
+      </button>
+    </div>
+
+    <div class="pred-body" id="pred-body">
+      <div class="pred-empty">
+        <div class="pred-empty-icon">🔮</div>
+        <div class="pred-empty-title">NO PREDICTIONS RUN YET</div>
+        <div style="font-size:11px;color:#2A3C50;margin-top:6px">
+          Click "RUN PREDICTION" to query the <code style="color:#4A6080">district_monthly</code> table and run the ML
+          model
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ════════════════════════════════════════════════════════════
+    // NPIDE PREDICTIVE ENGINE
+    // Fetches real data from FastAPI → PostgreSQL district_monthly
+    // ════════════════════════════════════════════════════════════
+
+    const API_BASE = "http://localhost:8000";   // ← your FastAPI server
+
+    const FEAT_IMPORTANCES = [
+      { name: "gap_ratio", val: 0.421 },
+      { name: "trend", val: 0.318 },
+      { name: "coverage_rate", val: 0.163 },
+      { name: "scheme_density", val: 0.098 },
+    ];
+
+    // ── App state ──
+    let state = { results: null, riskFilter: "ALL", stateFilter: "ALL", conversation: [] };
+
+    function escHtml(s) {
+      return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // ── DB status ping on load ──
+    async function pingBackend() {
+      const el = document.getElementById("db-status");
+      try {
+        const res = await fetch(`${API_BASE}/api/predictions`, { method: "HEAD" })
+          .catch(() => null);
+        // Even a 405 means the server is reachable
+        el.innerHTML = `<span class="api-dot live"></span>PostgreSQL · district_monthly · live`;
+      } catch {
+        el.innerHTML = `<span class="api-dot error"></span>Backend unreachable at ${API_BASE}`;
+      }
+    }
+    pingBackend();
+
+    // ── Main: fetch predictions from FastAPI ──
+    async function triggerPrediction() {
+      const btn = document.getElementById("pred-run-btn");
+      const body = document.getElementById("pred-body");
+
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner" style="border-top-color:#fff"></div> QUERYING DB…`;
+      body.innerHTML = `
+    <div style="text-align:center;padding:60px 20px">
+      <div class="spinner" style="width:32px;height:32px;border-width:3px;margin:0 auto 16px"></div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:#4A6080">
+        Fetching district_monthly from PostgreSQL…
+      </div>
+    </div>`;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/predictions`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: res.statusText }));
+          throw new Error(err.detail || `HTTP ${res.status}`);
+        }
+        state.results = await res.json();
+        state.riskFilter = "ALL";
+        state.stateFilter = "ALL";
+        state.conversation = [];
+        renderResults();
+      } catch (err) {
+        body.innerHTML = `
+      <div class="error-banner">
+        <div class="error-banner-title">⚠ BACKEND ERROR</div>
+        <div class="error-banner-sub">
+          Could not fetch from <code>${API_BASE}/api/predictions</code><br/><br/>
+          <strong>Error:</strong> ${escHtml(err.message)}<br/><br/>
+          Make sure your FastAPI server is running and the
+          <code>prediction_router</code> is registered.<br/>
+          Check the browser console for CORS errors.
+        </div>
+      </div>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "▶ RUN PREDICTION";
+      }
+    }
+
+    function getFilteredResults() {
+      if (!state.results) return [];
+      return state.results.filter(r => {
+        if (state.riskFilter !== "ALL" && r.risk_level !== state.riskFilter) return false;
+        if (state.stateFilter !== "ALL" && r.state !== state.stateFilter) return false;
+        return true;
+      });
+    }
+
+    function setRiskFilter(f) { state.riskFilter = f; renderResults(); }
+    function setStateFilter(s) { state.stateFilter = s; renderResults(); }
+
+    function renderResults() {
+      const body = document.getElementById("pred-body");
+      if (!state.results) return;
+
+      const all = state.results;
+      const high = all.filter(r => r.risk_level === "HIGH");
+      const medium = all.filter(r => r.risk_level === "MEDIUM");
+      const low = all.filter(r => r.risk_level === "LOW");
+      const filtered = getFilteredResults();
+      const statesInResults = [...new Set(all.map(r => r.state))].sort();
+
+      const alertHtml = high.length > 0
+        ? `<div class="alert-panel">
+        <div class="alert-panel-hdr">
+          <div class="alert-pulse"></div>
+          <div class="alert-title">⚠ ${high.length} HIGH-RISK DISTRICT${high.length > 1 ? "S" : ""} DETECTED — IMMEDIATE INTERVENTION REQUIRED</div>
+        </div>
+        ${high.map(p => `<div class="alert-district-card">
+          <div>
+            <div class="alert-district-name">${escHtml(p.district)}</div>
+            <div class="alert-district-meta">${escHtml(p.state)} · prob=${(p.failure_probability * 100).toFixed(0)}% · gap=${p.gap_ratio.toFixed(3)} · trend=${p.trend_dir}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="risk-badge risk-HIGH">HIGH RISK</span>
+            <button onclick="jumpToAgent()" style="background:rgba(255,70,96,0.15);border:1px solid rgba(255,70,96,0.3);color:var(--red);border-radius:5px;padding:5px 11px;font-size:10px;font-weight:700;font-family:var(--font-mono);cursor:pointer">AI ALERT →</button>
+          </div>
+        </div>`).join("")}
+      </div>`
+        : `<div style="background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--green);font-family:var(--font-mono)">✅ No HIGH risk districts — all districts within acceptable delivery thresholds</div>`;
+
+      body.innerHTML = `
+    <!-- Stats row -->
+    <div class="pred-stats-row">
+      <div class="pred-stat"><div class="pred-stat-num" style="color:#00D4FF">${all.length}</div><div class="pred-stat-label">DISTRICTS</div></div>
+      <div class="pred-stat"><div class="pred-stat-num" style="color:#9B6FFF">${statesInResults.length}</div><div class="pred-stat-label">STATES</div></div>
+      <div class="pred-stat"><div class="pred-stat-num" style="color:#FF4560">${high.length}</div><div class="pred-stat-label">HIGH RISK</div></div>
+      <div class="pred-stat"><div class="pred-stat-num" style="color:#FFB020">${medium.length}</div><div class="pred-stat-label">MEDIUM RISK</div></div>
+      <div class="pred-stat"><div class="pred-stat-num" style="color:#00E5A0">${low.length}</div><div class="pred-stat-label">LOW RISK</div></div>
+    </div>
+
+    <!-- Source badge -->
+    <div style="background:#060A12;border:1px solid #14213A;border-radius:8px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:10px;font-family:var(--font-mono)">
+      <span class="api-dot live"></span>
+      <span style="color:#4A6080">DATA SOURCE:</span>
+      <span style="color:var(--accent)">PostgreSQL → district_monthly</span>
+      <span style="color:#4A6080">·</span>
+      <span style="color:#7090B0">${all.length} districts · ${all.reduce((s, r) => s + r.months_analysed, 0)} rows analysed</span>
+    </div>
+
+    ${alertHtml}
+
+    <!-- State filter -->
+    <div class="state-filter-wrap">
+      <div class="state-filter-label">FILTER BY STATE</div>
+      <div class="state-chips">
+        <button class="state-chip${state.stateFilter === "ALL" ? " active" : ""}" onclick="setStateFilter('ALL')">ALL STATES</button>
+        ${statesInResults.map(s => `<button class="state-chip${state.stateFilter === s ? " active" : ""}" onclick="setStateFilter('${s.replace(/'/g, "\\'")}')">${escHtml(s)}</button>`).join("")}
+      </div>
+    </div>
+
+    <!-- Risk table -->
+    <div class="risk-table-wrap" style="margin-bottom:20px">
+      <div class="risk-table-header">
+        <div>
+          <div class="risk-table-title">DISTRICT RISK ASSESSMENT</div>
+          <div style="font-size:10px;color:#4A6080;font-family:var(--font-mono);margin-top:3px">
+            Showing ${filtered.length} of ${all.length} districts · Source: district_monthly (PostgreSQL)
+          </div>
+        </div>
+        <div class="risk-filter-row">
+          ${["ALL", "HIGH", "MEDIUM", "LOW"].map(f => `<button class="risk-filter-btn${state.riskFilter === f ? " active" : ""}" onclick="setRiskFilter('${f}')">${f}</button>`).join("")}
+        </div>
+      </div>
+      <div class="risk-row risk-thead">
+        <span>DISTRICT · STATE</span><span>FAILURE PROBABILITY</span><span>RISK</span><span>GAP RATIO</span><span>COVERAGE</span><span>TREND</span><span>MONTHS</span>
+      </div>
+      ${filtered.length === 0
+          ? `<div style="text-align:center;padding:30px;color:#4A6080;font-family:var(--font-mono);font-size:12px">No districts match the current filters</div>`
+          : filtered.map((r, i) => {
+            const barColor = r.risk_level === "HIGH" ? "#FF4560" : r.risk_level === "MEDIUM" ? "#FFB020" : "#00E5A0";
+            return `<div class="risk-row anim-in" style="animation-delay:${i * 0.03}s">
+            <div>
+              <div class="district-name">${escHtml(r.district)}</div>
+              <div class="state-tag">${escHtml(r.state)}</div>
+            </div>
+            <div class="prob-bar-wrap">
+              <div class="prob-bar-track"><div class="prob-bar-fill" style="width:${r.failure_probability * 100}%;background:${barColor}"></div></div>
+              <div class="prob-pct" style="color:${barColor}">${(r.failure_probability * 100).toFixed(0)}%</div>
+            </div>
+            <div><span class="risk-badge risk-${r.risk_level}">${r.risk_level}</span></div>
+            <div class="feat-val">${r.gap_ratio.toFixed(3)}</div>
+            <div class="feat-val">${r.coverage_rate.toFixed(2)}</div>
+            <div class="${r.trend_dir === "worsening" ? "trend-up" : "trend-down"}">${r.trend_dir === "worsening" ? "↑ WORSE" : "↓ BETTER"}</div>
+            <div class="feat-val">${r.months_analysed}</div>
+          </div>`;
+          }).join("")}
+    </div>
+
+    <!-- Feature importance + Agent -->
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;margin-bottom:20px">
+      <div class="pe-card">
+        <div class="pe-label" style="margin-bottom:14px">MODEL FEATURE IMPORTANCE</div>
+        ${FEAT_IMPORTANCES.map(f => `<div class="feat-imp-row">
+          <div class="feat-imp-name">${f.name}</div>
+          <div class="feat-imp-track"><div class="feat-imp-fill" style="width:${f.val * 100}%"></div></div>
+          <div class="feat-imp-val">${(f.val * 100).toFixed(1)}%</div>
+        </div>`).join("")}
+
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid #14213A">
+          <div class="pe-label" style="margin-bottom:10px">DB COVERAGE</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:#4A6080;line-height:1.6">
+            <div>🗄 Source: <span style="color:var(--accent);font-family:var(--font-mono)">PostgreSQL</span></div>
+            <div>📊 Table: <span style="color:var(--accent);font-family:var(--font-mono)">district_monthly</span></div>
+            <div>📍 <span style="color:var(--accent);font-family:var(--font-mono)">${all.length} districts</span> · ${statesInResults.length} states</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid #14213A">
+          <div class="pe-label" style="margin-bottom:8px">STATE BREAKDOWN</div>
+          ${statesInResults.map(s => {
+            const ds = all.filter(r => r.state === s);
+            const highCount = ds.filter(r => r.risk_level === "HIGH").length;
+            return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+              <span style="font-size:10px;color:#7090B0">${escHtml(s)}</span>
+              <span style="font-family:var(--font-mono);font-size:10px;color:${highCount > 0 ? "#FF4560" : ds.some(r => r.risk_level === "MEDIUM") ? "#FFB020" : "#00E5A0"}">${ds.length}d · ${highCount > 0 ? highCount + " HIGH" : "ok"}</span>
+            </div>`;
+          }).join("")}
+        </div>
+      </div>
+
+      <!-- Agent chat -->
+      <div class="agent-panel" id="agent-panel">
+        <div class="agent-panel-hdr">
+          <div class="agent-icon">🤖</div>
+          <div>
+            <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:#E8F0FF">GOVT ALERT AGENT (Claude AI)</div>
+            <div style="font-size:10px;color:#4A6080;font-family:var(--font-mono)">Intervention recommendations for high-risk districts</div>
+          </div>
+          ${high.length > 0
+          ? `<button onclick="triggerAgentAlert()" id="agent-trigger-btn" style="margin-left:auto;background:linear-gradient(135deg,var(--red),#FF8C20);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:10px;font-weight:700;font-family:var(--font-mono);letter-spacing:1px;cursor:pointer">⚡ TRIGGER ALERT</button>`
+          : ""}
+        </div>
+        <div class="agent-chat-box" id="agent-chat-box">
+          ${state.conversation.length === 0
+          ? `<div class="agent-msg system">Awaiting alert trigger. ${high.length} HIGH risk district${high.length !== 1 ? "s" : ""} detected across ${statesInResults.length} states. ${high.length > 0 ? "Trigger alert to get intervention recommendations." : "All districts within acceptable thresholds."}</div>`
+          : state.conversation.map(m => `<div class="agent-msg ${m.role === "assistant" ? "bot" : "user"}">${m.content.replace(/\n/g, "<br/>")}</div>`).join("")}
+        </div>
+        <div class="agent-input-row">
+          <input class="agent-input" id="agent-input" placeholder="Ask about specific districts or states…" onkeydown="if(event.key==='Enter')sendAgentMessage()" ${state.conversation.length === 0 ? "disabled" : ""}/>
+          <button class="agent-send-btn" onclick="sendAgentMessage()" ${state.conversation.length === 0 ? "disabled" : ""}>SEND</button>
+        </div>
+      </div>
+    </div>`;
+    }
+
+    function jumpToAgent() {
+      const ap = document.getElementById("agent-panel");
+      if (ap) ap.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    async function triggerAgentAlert() {
+      const high = (state.results || []).filter(p => p.risk_level === "HIGH");
+      if (!high.length) return;
+
+      const btn = document.getElementById("agent-trigger-btn");
+      if (btn) { btn.disabled = true; btn.textContent = "SENDING…"; }
+
+      const chatBox = document.getElementById("agent-chat-box");
+      if (chatBox) chatBox.innerHTML = `<div class="agent-msg system">⚡ Sending HIGH risk alert across ${[...new Set(high.map(r => r.state))].length} state(s) to Claude agent…</div>`;
+
+      const systemPrompt = `You are a government welfare scheme monitoring agent for India.
+You have ML predictions from a Gradient Boosting model trained on live district_monthly PostgreSQL data.
+
+ALL PREDICTION RESULTS:
+${JSON.stringify(state.results, null, 2)}
+
+Feature definitions:
+- gap_ratio: avg (expected - actual) / expected [higher = worse delivery]
+- coverage_rate: avg actual beneficiaries per 1000 population
+- scheme_density: number of schemes per million population
+- trend_dir: "worsening" if gap grew over months, else "improving"
+
+Thresholds: HIGH >= 70%, MEDIUM 40-70%, LOW < 40%`;
+
+      const userMsg = `AUTOMATED ALERT: ${high.length} district${high.length > 1 ? "s" : ""} across ${[...new Set(high.map(r => r.state))].join(", ")} have exceeded the 0.70 failure threshold.\n\n${high.map(p => `• ${p.district} (${p.state}): ${(p.failure_probability * 100).toFixed(0)}% failure prob — gap_ratio=${p.gap_ratio.toFixed(3)}, coverage=${p.coverage_rate.toFixed(2)}, trend=${p.trend_dir}`).join("\n")}\n\nProvide:\n1. Risk summary per HIGH district\n2. Top 2 interventions per district\n3. Which state needs emergency attention first and why`;
+
+      state.conversation = [{ role: "user", content: userMsg }];
+
+      try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: systemPrompt, messages: [{ role: "user", content: userMsg }] })
+        });
+        const data = await response.json();
+        const reply = data.content?.[0]?.text || "(No response from agent)";
+        state.conversation.push({ role: "assistant", content: reply });
+      } catch (e) {
+        state.conversation.push({ role: "assistant", content: `Agent error: ${e.message}` });
+      }
+
+      renderResults();
+      setTimeout(() => { const cb = document.getElementById("agent-chat-box"); if (cb) cb.scrollTop = cb.scrollHeight; }, 200);
+    }
+
+    async function sendAgentMessage() {
+      const inp = document.getElementById("agent-input");
+      const text = (inp?.value || "").trim();
+      if (!text) return;
+      inp.value = "";
+      state.conversation.push({ role: "user", content: text });
+      renderResults();
+
+      const chatBox = document.getElementById("agent-chat-box");
+      if (chatBox) {
+        const loadDiv = document.createElement("div");
+        loadDiv.className = "agent-msg system";
+        loadDiv.innerHTML = `<div class="spinner" style="display:inline-block;width:14px;height:14px;border-width:1.5px;margin-right:8px"></div>Thinking…`;
+        chatBox.appendChild(loadDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      const systemPrompt = `You are a government welfare monitoring agent for India. You have ML predictions for districts across multiple states from the district_monthly PostgreSQL database table. Answer follow-up questions concisely and data-driven.\n\nData:\n${JSON.stringify(state.results, null, 2)}`;
+
+      try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 600, system: systemPrompt, messages: state.conversation.map(m => ({ role: m.role, content: m.content })) })
+        });
+        const data = await response.json();
+        const reply = data.content?.[0]?.text || "(No response)";
+        state.conversation.push({ role: "assistant", content: reply });
+      } catch (e) {
+        state.conversation.push({ role: "assistant", content: `Error: ${e.message}` });
+      }
+
+      renderResults();
+      setTimeout(() => { const cb = document.getElementById("agent-chat-box"); if (cb) cb.scrollTop = cb.scrollHeight; }, 100);
+    }
+  </script>
+=======
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>NPIDE — National Policy Intelligence & Delivery Engine</title>
@@ -1474,5 +2614,7 @@ renderAdminSection = function(sec){
 
 checkBackend();
 </script>
+>>>>>>> 69ec2de6fb09d0b17f08616fc3f2fe49d6ea3cc7
 </body>
+
 </html>

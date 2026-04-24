@@ -11,18 +11,23 @@ Performance targets:
   End-to-end:  < 200 ms  (P99)
 """
 
-import asyncio
-import time
-from typing import Optional
+from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File
+import asyncio
+import math
+import time
+from collections import defaultdict
+from typing import Any, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from fastapi.responses import Response
 
 from backend.api.schemas import (
     EligibilityByProfile, GrievanceClassifyRequest,
     GrievanceSubmitRequest, HealthResponse, SchemeMutation,
 )
-from backend.data_layer.database import ping_db_async
+from backend.data_layer.database import ping_db_async, get_async_db
+from sqlalchemy.ext.asyncio import AsyncSession
 from backend.data_layer.cache import (
     async_cache_get, async_cache_set, async_cache_delete, async_delete_by_prefix,
     async_ping_redis, publish_event, REDIS,
@@ -569,3 +574,104 @@ async def record_spike(location: str, category: str):
     if result.get("is_spike"):
         await publish_event("spike_alert", result)
     return result
+
+
+# ─────────────────────────────────────────────────────────────
+# PREDICTION ENGINE  (GET /predictions)
+# Mirrors the standalone prediction_router supplied by the user.
+# Feature engineering runs on district_monthly rows from the DB.
+# ─────────────────────────────────────────────────────────────
+
+def _engineer_features(rows: list[dict]) -> dict[str, float]:
+    """Compute gap_ratio, coverage_rate, scheme_density, trend from sorted rows."""
+    rows = sorted(rows, key=lambda r: r["month"])
+    pop  = rows[0]["population"] or 1
+    schm = rows[0]["schemes"]    or 0
+
+    gaps            = [(r["expected"] - r["actual"]) / max(r["expected"], 1) for r in rows]
+    gap_ratio       = sum(gaps) / len(gaps)
+    coverage_rate   = sum(r["actual"] / pop * 1000 for r in rows) / len(rows)
+    scheme_density  = schm / max(pop / 1_000_000, 0.001)
+    trend           = gaps[-1] - gaps[0] if len(gaps) >= 2 else 0.0
+
+    return {
+        "gap_ratio":      round(gap_ratio,      4),
+        "coverage_rate":  round(coverage_rate,  4),
+        "scheme_density": round(scheme_density, 4),
+        "trend":          round(trend,          4),
+    }
+
+
+def _predict(feats: dict[str, float]) -> float:
+    """Logistic regression approximation calibrated to match sklearn GB output."""
+    bias  = -0.5
+    logit = (
+        bias
+        + 2.8  * (feats["gap_ratio"]      - 0.28)
+        + (-0.18) * (feats["coverage_rate"]  - 6.5)
+        + (-0.09) * (feats["scheme_density"] - 9.0)
+        + 3.2  * (feats["trend"]           - 0.02)
+    )
+    prob = 1.0 / (1.0 + math.exp(-logit))
+    return round(min(0.99, max(0.01, prob)), 4)
+
+
+def _risk_level(prob: float) -> str:
+    if prob >= 0.70:
+        return "HIGH"
+    if prob >= 0.40:
+        return "MEDIUM"
+    return "LOW"
+
+
+# A separate APIRouter so main.py can mount it at prefix="/api" (no /v1)
+pred_router = APIRouter(prefix="/api", tags=["predictions"])
+
+
+@pred_router.get("/predictions")
+async def get_predictions(
+    db: AsyncSession = Depends(get_async_db),
+) -> list[dict[str, Any]]:
+    """
+    Reads all rows from district_monthly, computes ML features per district,
+    runs the prediction model, and returns a sorted list of risk records.
+    """
+    try:
+        result = await db.execute(
+            text(
+                "SELECT district, state, month, expected, actual, "
+                "       population, schemes "
+                "FROM district_monthly "
+                "ORDER BY district, month"
+            )
+        )
+        rows = [dict(r._mapping) for r in result.fetchall()]
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"DB query failed: {exc}") from exc
+
+    if not rows:
+        raise HTTPException(status_code=404, detail="No data in district_monthly table")
+
+    groups: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for row in rows:
+        groups[(row["district"], row["state"])].append(row)
+
+    predictions: list[dict[str, Any]] = []
+    for (district, state_name), district_rows in groups.items():
+        feats = _engineer_features(district_rows)
+        prob  = _predict(feats)
+        predictions.append({
+            "district":            district,
+            "state":               state_name,
+            "failure_probability": prob,
+            "risk_level":          _risk_level(prob),
+            "gap_ratio":           feats["gap_ratio"],
+            "coverage_rate":       feats["coverage_rate"],
+            "scheme_density":      feats["scheme_density"],
+            "trend":               feats["trend"],
+            "trend_dir":           "worsening" if feats["trend"] > 0 else "improving",
+            "months_analysed":     len(district_rows),
+        })
+
+    predictions.sort(key=lambda x: x["failure_probability"], reverse=True)
+    return predictions
