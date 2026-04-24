@@ -1,0 +1,27 @@
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.1
+
+# Async DB + Redis (the real upgrades)
+sqlalchemy[asyncio]>=2.0.30
+asyncpg>=0.29.0
+redis[asyncio]>=5.0.4
+
+# AI / ML
+polars>=0.20.31
+scikit-learn>=1.5.0
+spacy>=3.7.4
+joblib>=1.4.2
+numpy>=1.26.4
+
+# Monitoring + structured logging
+prometheus-client>=0.20.0
+structlog>=24.2.0
+
+# Core
+python-dotenv>=1.0.1
+pydantic>=2.7.1
+pydantic-settings>=2.3.1
+httpx>=0.27.0
+pypdf>=4.2.0
+python-multipart>=0.0.9
+aiosqlite>=0.20.0

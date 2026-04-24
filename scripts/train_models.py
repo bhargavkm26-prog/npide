@@ -243,7 +243,7 @@ if __name__ == "__main__":
     print("  NPIDE - Model Training")
     print("=" * 60)
 
-    ssuccess1 = train_isolation_forest()
+    success1 = train_isolation_forest()
     success2 = train_grievance_classifier()
     success3 = train_predictor()
 

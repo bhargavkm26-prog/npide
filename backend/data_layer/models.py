@@ -101,3 +101,16 @@ class PolicyAnalytics(Base):
     computed_at     = Column(DateTime, default=func.now())
 
     scheme = relationship("Scheme", back_populates="analytics")
+
+
+class DistrictMonthly(Base):
+    __tablename__ = "district_monthly"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    district = Column(String(100))
+    state = Column(String(100))
+    month = Column(Integer)
+    expected = Column(Integer)
+    actual = Column(Integer)
+    population = Column(Integer)
+    schemes = Column(Integer)
